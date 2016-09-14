@@ -56,13 +56,14 @@ public class WordList {
 		return _wordList.get(a);
 	}
 	
-	public ArrayList<String> createTestList(int level){
+	public ArrayList<String> createTestList(int level, int num){
 		LinkedHashSet<String> list = new LinkedHashSet<String>();
-		while(list.size()<10||list.size()==getWordCount(level))
+		while(list.size()<num||list.size()==getWordCount(level))
 			list.add(getRandomWord(level));
 		
 		ArrayList<String> testList = new ArrayList<String>();
 		testList.addAll(list);
 		return testList;
 	}
+	
 }
