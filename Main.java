@@ -1,5 +1,3 @@
-package prototype;
-
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -10,10 +8,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
@@ -29,13 +31,17 @@ public class Main extends JFrame implements ActionListener {
 	private JButton viewStats = new JButton("View Statistics");
 	private JButton clearStats = new JButton("Clear Statistics");
 	
+	private JPanel menuPanel = new JPanel();
+	private String _level;
+	
 	public Main() {
 		
 		//Setting the size of the main menu and choosing the layout of it.
 		setSize(500,500);
-		setLayout(new GridLayout(5,1,2,2));
 		//Choose default close option.
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		
+		menuPanel.setLayout(new GridLayout(5,1,2,2));
 		
 		//Entering the heading of the main menu to make it look more user freindly.
 		JLabel label = new JLabel("Welcome to the Spelling Aid!!");
@@ -43,8 +49,7 @@ public class Main extends JFrame implements ActionListener {
 		label.setFont(new Font("Arial",Font.BOLD, 18));
 		
 		//Adding the heading label to the main menu
-		add(label);
-		
+		menuPanel.add(label);
 		//Adding Actionlistener to each buttons
 		quiz.addActionListener(this);
 		review.addActionListener(this);
@@ -52,11 +57,54 @@ public class Main extends JFrame implements ActionListener {
 		clearStats.addActionListener(this);
 		
 		//Adding buttons to the Main menu.
-		add(quiz);
-		add(review);
-		add(viewStats);
-		add(clearStats);
+		menuPanel.add(quiz);
+		menuPanel.add(review);
+		menuPanel.add(viewStats);
+		menuPanel.add(clearStats);
 		
+		this.add(menuPanel);
+		
+		/*
+		JPanel tempPanel = new JPanel();
+		tempPanel.setLayout(null);
+		JLabel levelLabel = new JLabel("Please select a level:");
+		levelLabel.setBounds(170, 150, 250, 50);
+		String[] levelStrings = { "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", 
+				"Nine", "Ten", "Eleven" };
+		final JComboBox levelList = new JComboBox(levelStrings);		
+		Action boxAction = new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				_level = (String)levelList.getSelectedItem();
+				menu();
+			}
+		};
+		levelList.addActionListener(boxAction);
+		levelList.setBounds(190, 200, 100, 30);
+		tempPanel.add(levelLabel);
+		tempPanel.add(levelList);
+		this.add(tempPanel);
+		*/
+		
+	}
+	
+	private void levelSelect() {
+		String[] levelStrings = { "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", 
+				"Nine", "Ten", "Eleven" };
+		final JComboBox<String> combo = new JComboBox<>(levelStrings);
+		String[] options = { "OK" };
+		
+		/*_level = JOptionPane.showOptionDialog(this, combo, "Please select a level:",
+				JOptionPane.DEFAULT_OPTION	,JOptionPane.PLAIN_MESSAGE, null, options, options[0]); */
+				
+		_level = (String) JOptionPane.showInputDialog(this, "Please select a level", "Level Select", 
+				JOptionPane.PLAIN_MESSAGE, null, levelStrings, levelStrings[0]);
+	}
+	
+	private void menu() {
+		getContentPane().removeAll();
+		getContentPane().add(menuPanel);
+		revalidate();
+		repaint();
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -75,7 +123,7 @@ public class Main extends JFrame implements ActionListener {
 				//If there is no word inside the lsit
 				}else{ 
 					WordList word = new WordList("wordlist");
-					if(word.getWordCount(1)<1){
+					if(word.getWordCount()<1){
 						JOptionPane.showMessageDialog(this, "No word to be tested!!", "Warning", getDefaultCloseOperation());
 					}else{
 					//else start the quiz
@@ -94,7 +142,7 @@ public class Main extends JFrame implements ActionListener {
 					JOptionPane.showMessageDialog(this, "No failed word to be tested!!", "Warning", getDefaultCloseOperation());
 				}else{ 
 					WordList word = new WordList(".failed");
-					if(word.getWordCount(1)<1){
+					if(word.getWordCount()<1){
 						JOptionPane.showMessageDialog(this, "No failed word to be tested!!", "Warning", getDefaultCloseOperation());
 					}else{
 					//else start the review
@@ -137,6 +185,7 @@ public class Main extends JFrame implements ActionListener {
 			public void run() {
 				Main frame = new Main();
 				frame.setVisible(true);
+				frame.levelSelect();
 			}
 		});
 	}
