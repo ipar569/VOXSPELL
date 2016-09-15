@@ -13,6 +13,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.util.ArrayList;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -20,6 +22,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingWorker;
 
 /*
  * written by Injae Park
@@ -33,18 +36,21 @@ public class Quiz extends JFrame implements ActionListener {
 	private int _testNo=1;
 	private int _wc;
 	private JLabel label,label1,label2;
-	private String _testWord;
 	private int incorrect;
 	private String _file;
 	private Main _main;
+	private ArrayList<String> _testList = new ArrayList<String>();
+	private int _maxNum;
+	private int _level;
+	
 	
 	//Constructor takes two input. One file name contained the wordlist and second is 
 	//the object where the quiz is excuted.
-	public Quiz(String file,Main main) throws  Exception {
+	public Quiz(String file,Main main,int level) throws  Exception {
 		//Initialising field variables using arguments
 		_main=main;
 		_file=file;
-		
+		_level = level;
 		
 		//Setting the size and layout of the spelling quiz
 		setSize(500,500);
@@ -64,23 +70,29 @@ public class Quiz extends JFrame implements ActionListener {
 		label1.setHorizontalAlignment(SwingConstants.CENTER);
 		label1.setFont(new Font("Arial",Font.BOLD, 18));
 		
+		WordList wordlist;
 		//Creaeting the wordlist using the file name
-		WordList wordlist = new WordList(_file);
-		//Getting the word count.
-		_wc = wordlist.getWordCount(1);
+		if(file.equals("wordlist")){
+			wordlist = new WordList(_file);
+			_maxNum = 10;
+		}else{
+			wordlist = new WordList(file,level);
+			_maxNum = 5;
+		}//Getting the word count.
+		_wc = wordlist.getWordCount(level);
 		
 		//Choosing the number of quiz depending on the word count
 		String tts = "";
-		if(_wc<3){
+		if(_wc<_maxNum){
 			tts="Spell word 1 out of "+_wc+": ";
 			label = new JLabel(tts);
 		}else{
-			tts="Spell word 1 out of 3: ";
+			tts="Spell word 1 out of "+_maxNum+": ";
 			label = new JLabel(tts);
 		}
 		
 		//Word to be tested
-		setWord();
+		setTestList(wordlist);
 		
 		//Setting the size of the JText field.
 		txt.setPreferredSize(new Dimension(200,30));
@@ -95,9 +107,7 @@ public class Quiz extends JFrame implements ActionListener {
 		middle.add(btn);
 		
 		//If it is for reivew, add speak button
-		if(_file.equals(".failed")){
-			middle.add(speak);
-		}
+		middle.add(speak);
 
 		//Adding labels and pane to the main frame.
 		add(label1);
@@ -109,8 +119,8 @@ public class Quiz extends JFrame implements ActionListener {
 		speak.addActionListener(this);
 		
 		//Speaking out instruction to start and the word to be tested.
-		festival(tts);
-		festival(_testWord);
+		festival(tts+_testList.get(_testNo-1));
+		
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -125,23 +135,23 @@ public class Quiz extends JFrame implements ActionListener {
 			JButton button = (JButton) e.getSource();  
 				if (button.equals(speak)){  
 
-				festivalAlphabet(_testWord);
+				festival(_testList.get(_testNo-1));
 				return;
 				}
 			//If user is correct
-			if(_testWord.equalsIgnoreCase(word)){
+			if(_testList.get(_testNo-1).equalsIgnoreCase(word)){
 				//Showing and telling correct message
 				label2.setText("Correct!!");
-				festival(label2.getText());
 				
-				
+				//Remove word from failed test list
+				removeFailed(_testList.get(_testNo-1));
 				
 				//Increase the test number
 				_testNo++;
 				
 				//Setting the new label
-				label.setText("Spell word "+(_testNo)+" out of 3: ");
-				if(_wc<3)
+				label.setText("Spell word "+(_testNo)+" out of "+_maxNum+": ");
+				if(_wc<_maxNum)
 					label.setText("Spell word "+(_testNo)+" out of "+ _wc+": ");
 				
 				//If user gets incorrect first time, the word is added to faulted list
@@ -152,12 +162,7 @@ public class Quiz extends JFrame implements ActionListener {
 					mastered();
 				}
 				
-				//New word is set
-				setWord();
 				
-				//Remove word from failed test list
-				removeFailed(_testWord);
-
 				incorrect =0;
 			//If user gets incorrect
 			}else{
@@ -165,34 +170,27 @@ public class Quiz extends JFrame implements ActionListener {
 				if(incorrect<1){
 					//Setting message to the user about the fault
 					label2.setText("Incorrect, please try again!!");
-					festival(label2.getText());
+					festival(label2.getText()+" "+_testList.get(_testNo-1));
 					//Word is spoken again.
-					festival(_testWord);
 					incorrect++;
 					return;
 				//First time failing
 				}else{
 					//Result message to user
 					label2.setText("Failed Test");
-					festival(label2.getText());
-					
+
 					//Changing field as needed
 					_testNo++;
 					incorrect =0;
 					
 					//Setting new label for new quiz
-					label.setText("Spell word "+(_testNo)+" out of 3: ");
-					if(_wc<3)
+					label.setText("Spell word "+(_testNo)+" out of "+_maxNum+": ");
+					if(_wc<_maxNum)
 						label.setText("Spell word "+(_testNo)+" out of "+ _wc+": ");
-					
-					
 					
 					//Adding failed word to the failed list.
 					failed();
 					failedTotal();
-					
-					//Setting new word to be tested.
-					setWord();
 
 				}
 			}
@@ -200,7 +198,7 @@ public class Quiz extends JFrame implements ActionListener {
 			//Clearing the Jtext field
 			txt.setText("");
 			//If test is finished
-			if((_testNo==4)||(_wc<_testNo)){
+			if((_testNo==_maxNum+1)||(_wc<_testNo)){
 				//Telling the user the teset is finished
 				label2.setText("Quiz Finished!!");
 				festival(label2.getText());
@@ -210,8 +208,7 @@ public class Quiz extends JFrame implements ActionListener {
 				dispose();
 			}else{
 				//Continue the quiz
-				festival(label.getText());
-				festival(_testWord);
+				festival(label2.getText()+" "+label.getText()+" "+_testList.get(_testNo-1));
 			}
 		}catch(Exception excep){
 			excep.printStackTrace();
@@ -223,16 +220,38 @@ public class Quiz extends JFrame implements ActionListener {
 	}
 	//Method that uses festival to speak out the string passed into it
 	private void festival(String tts) throws Exception{
-		//command to be excuted.
-		String cmd = "echo "+tts+"| festival --tts";
-		ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
-		//Excute the command
-		Process process = builder.start();
-		//Wait for the previous process to be finihsed
-		process.waitFor();
+		Festival say = new Festival(tts);
+		say.execute();
 	
 	}
 	
+	class Festival extends SwingWorker<Void, Integer> {
+		private String _tts;
+		
+		public Festival(String tts){
+			_tts=tts;
+		}
+		
+		@Override
+		protected Void doInBackground() throws Exception {
+			festivals(_tts);
+			return null;
+		}
+		
+		private void festivals(String tts) throws Exception{
+			//command to be excuted.
+			String cmd = "echo "+tts+"| festival --tts";
+			ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
+			//Excute the command
+			Process process = builder.start();
+			//Wait for the previous process to be finihsed
+			process.waitFor();
+		
+		}
+		
+	}
+	
+	/*
 	//Speaking out the spelling of the word passed into it
 	private void festivalAlphabet(String tts) throws Exception{
 		
@@ -246,10 +265,15 @@ public class Quiz extends JFrame implements ActionListener {
 		WordList wordlist = new WordList(_file);
 		_testWord = wordlist.getRandomWord(1);	
 	}
+	*/
+	
+	private void setTestList(WordList wordlist) throws IOException{
+		_testList = wordlist.createTestList(_level,_maxNum);	
+	}
 	
 	//Putting Failed word into failed list
 	private void failed() throws IOException{
-		File failed = new File(".failed");
+		File failed = new File(".failed"+_level);
 		//If file does not exist, create new file
 		if(!failed.exists()) {
 			failed.createNewFile();
@@ -258,12 +282,12 @@ public class Quiz extends JFrame implements ActionListener {
 		//Appending the word to the file
 		Writer output;
 		output = new BufferedWriter(new FileWriter(failed,true)); 
-		output.append(_testWord+"\n");
+		output.append(_testList.get(_testNo-1)+"\n");
 		output.close();
 	}
 	
 	private void removeFailed(String word) throws IOException{
-		File failed = new File(".failed");
+		File failed = new File(".failed"+_level);
 		//If file does not exist, create new file
 		if(!failed.exists()) {
 			failed.createNewFile();
@@ -301,7 +325,7 @@ public class Quiz extends JFrame implements ActionListener {
 	
 	//Adding failed word to the failed_total list
 	private void failedTotal() throws IOException{
-		File failed = new File(".failed_total");
+		File failed = new File(".failed_total"+_level);
 		//If file does not exist, create new file
 		if(!failed.exists()) {
 			failed.createNewFile();
@@ -310,13 +334,13 @@ public class Quiz extends JFrame implements ActionListener {
 		//Appending the word to the file
 		Writer output;
 		output = new BufferedWriter(new FileWriter(failed,true)); 
-		output.append(_testWord+"\n");
+		output.append(_testList.get(_testNo-1)+"\n");
 		output.close();
 	}
 	
 	//Adding correct word to mastered list
 	private void mastered() throws IOException{
-		File mastered = new File(".mastered");
+		File mastered = new File(".mastered"+_level);
 		//If file does not exist, create new file
 		if(!mastered.exists()) {
 			mastered.createNewFile();
@@ -325,13 +349,13 @@ public class Quiz extends JFrame implements ActionListener {
 		//Appending the word to the file
 		Writer output;
 		output = new BufferedWriter(new FileWriter(mastered,true));
-		output.append(_testWord+"\n");
+		output.append(_testList.get(_testNo-1)+"\n");
 		output.close();
 	}
 
 	//Adding correct word to faulted list
 	private void faulted() throws IOException{
-		File faulted = new File(".faulted");
+		File faulted = new File(".faulted"+_level);
 		//If file does not exist, create new file
 		if(!faulted.exists()) {
 			faulted.createNewFile();
@@ -340,7 +364,7 @@ public class Quiz extends JFrame implements ActionListener {
 		//Appending the word to the file
 		Writer output;
 		output = new BufferedWriter(new FileWriter(faulted,true));
-		output.append(_testWord+"\n");
+		output.append(_testList.get(_testNo-1)+"\n");
 		output.close();
 	}
 }
