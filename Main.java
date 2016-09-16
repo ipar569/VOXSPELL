@@ -1,3 +1,5 @@
+package prototype;
+
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -32,7 +34,7 @@ public class Main extends JFrame implements ActionListener {
 	private JButton clearStats = new JButton("Clear Statistics");
 	
 	private JPanel menuPanel = new JPanel();
-	private String _level;
+	private int _level;
 	
 	public Main() {
 		
@@ -88,16 +90,17 @@ public class Main extends JFrame implements ActionListener {
 	}
 	
 	private void levelSelect() {
-		String[] levelStrings = { "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", 
-				"Nine", "Ten", "Eleven" };
+		String[] levelStrings = { "1", "2", "3", "4", "5", "6", "7", "8", 
+				"9", "10", "11" };
 		final JComboBox<String> combo = new JComboBox<>(levelStrings);
 		String[] options = { "OK" };
 		
 		/*_level = JOptionPane.showOptionDialog(this, combo, "Please select a level:",
 				JOptionPane.DEFAULT_OPTION	,JOptionPane.PLAIN_MESSAGE, null, options, options[0]); */
 				
-		_level = (String) JOptionPane.showInputDialog(this, "Please select a level", "Level Select", 
+		String num = (String) JOptionPane.showInputDialog(this, "Please select a level", "Level Select", 
 				JOptionPane.PLAIN_MESSAGE, null, levelStrings, levelStrings[0]);
+		_level = Integer.parseInt(num);
 	}
 	
 	private void menu() {
@@ -123,12 +126,12 @@ public class Main extends JFrame implements ActionListener {
 				//If there is no word inside the lsit
 				}else{ 
 					WordList word = new WordList("wordlist");
-					if(word.getWordCount()<1){
+					if(word.getWordCount(_level)<1){
 						JOptionPane.showMessageDialog(this, "No word to be tested!!", "Warning", getDefaultCloseOperation());
 					}else{
 					//else start the quiz
 					setVisible(false);
-					Quiz q = new Quiz("wordlist",this);
+					Quiz q = new Quiz("wordlist",this, _level);
 					q.setVisible(true);
 					}
 				}
@@ -142,12 +145,12 @@ public class Main extends JFrame implements ActionListener {
 					JOptionPane.showMessageDialog(this, "No failed word to be tested!!", "Warning", getDefaultCloseOperation());
 				}else{ 
 					WordList word = new WordList(".failed");
-					if(word.getWordCount()<1){
+					if(word.getWordCount(_level)<1){
 						JOptionPane.showMessageDialog(this, "No failed word to be tested!!", "Warning", getDefaultCloseOperation());
 					}else{
 					//else start the review
 					setVisible(false);
-					Quiz q = new Quiz(".failed",this);
+					Quiz q = new Quiz(".failed",this, _level);
 					q.setVisible(true);
 					}
 				}
@@ -208,4 +211,5 @@ public class Main extends JFrame implements ActionListener {
 			output.close();
 		}
 	}
+
 }
