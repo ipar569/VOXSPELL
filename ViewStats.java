@@ -64,7 +64,7 @@ public class ViewStats extends JFrame implements ActionListener{
 		
 		//List of words to be added to the table
 		WordList wordlist = new WordList("wordlist");
-		int wc = wordlist.getWordCount();
+		int wc = wordlist.getWordCount(1);
 		
 		//Initialising array to store data
 		Object[][] data = new Object[wc][4];

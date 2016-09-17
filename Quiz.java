@@ -32,7 +32,8 @@ public class Quiz extends JFrame implements ActionListener {
 	
 	private JTextField txt = new JTextField("");
 	private JButton btn = new JButton("Submit");
-	private JButton speak = new JButton("Listen to Spelling");
+	private JButton speak = new JButton("Listen Again");
+	private JButton spelling = new JButton("Listen to Spelling");
 	private int _testNo=1;
 	private int _wc;
 	private JLabel label,label1,label2;
@@ -43,6 +44,8 @@ public class Quiz extends JFrame implements ActionListener {
 	private int _maxNum;
 	private int _level;
 	
+	private int _attempts;
+	private int _fails;
 	
 	//Constructor takes two input. One file name contained the wordlist and second is 
 	//the object where the quiz is excuted.
@@ -51,12 +54,13 @@ public class Quiz extends JFrame implements ActionListener {
 		_main=main;
 		_file=file;
 		_level = level;
-		
+		getAccuracy();
 		//Setting the size and layout of the spelling quiz
 		setSize(500,500);
 		setLayout(new GridLayout(3,1));
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		
+		changeVoice("voice_akl_nz_jdt_diphone");
 		//Creating Panels to be used.
 		JPanel middle = new JPanel();
 
@@ -87,7 +91,7 @@ public class Quiz extends JFrame implements ActionListener {
 			tts="Spell word 1 out of "+_wc+": ";
 			label = new JLabel(tts);
 		}else{
-			tts="Spell word 1 out of "+_maxNum+": ";
+			tts="Spell word 1 out of "+_maxNum+"?: ";
 			label = new JLabel(tts);
 		}
 		
@@ -104,10 +108,14 @@ public class Quiz extends JFrame implements ActionListener {
 		//Adding label and buttons to the middle pane.
 		middle.add(label);
 		middle.add(txt);
+		
 		middle.add(btn);
 		
 		//If it is for reivew, add speak button
 		middle.add(speak);
+		if(_maxNum==5){
+			middle.add(spelling);
+		}
 
 		//Adding labels and pane to the main frame.
 		add(label1);
@@ -117,6 +125,7 @@ public class Quiz extends JFrame implements ActionListener {
 		//Adding action listeners to the button.
 		btn.addActionListener(this);
 		speak.addActionListener(this);
+		spelling.addActionListener(this);
 		
 		//Speaking out instruction to start and the word to be tested.
 		festival(tts+_testList.get(_testNo-1));
@@ -126,7 +135,7 @@ public class Quiz extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		//Getting the word that user wrote
 		String word = txt.getText();
-		boolean b = onlyAlphabet(word);
+		//boolean b = onlyAlphabet(word);
 			
 		
 		try{
@@ -135,8 +144,11 @@ public class Quiz extends JFrame implements ActionListener {
 			JButton button = (JButton) e.getSource();  
 				if (button.equals(speak)){  
 
-				festival(_testList.get(_testNo-1));
-				return;
+					festival(_testList.get(_testNo-1));
+					return;
+				}else if (button.equals(spelling)){
+					festivalAlphabet(_testList.get(_testNo-1));
+					return;
 				}
 			//If user is correct
 			if(_testList.get(_testNo-1).equalsIgnoreCase(word)){
@@ -146,13 +158,7 @@ public class Quiz extends JFrame implements ActionListener {
 				//Remove word from failed test list
 				removeFailed(_testList.get(_testNo-1));
 				
-				//Increase the test number
-				_testNo++;
-				
-				//Setting the new label
-				label.setText("Spell word "+(_testNo)+" out of "+_maxNum+": ");
-				if(_wc<_maxNum)
-					label.setText("Spell word "+(_testNo)+" out of "+ _wc+": ");
+				_attempts++;
 				
 				//If user gets incorrect first time, the word is added to faulted list
 				if(incorrect==1){
@@ -161,6 +167,14 @@ public class Quiz extends JFrame implements ActionListener {
 				}else{
 					mastered();
 				}
+				
+				//Increase the test number
+				_testNo++;
+				
+				//Setting the new label
+				label.setText("Spell word "+(_testNo)+" out of "+_maxNum+": ");
+				if(_wc<_maxNum)
+					label.setText("Spell word "+(_testNo)+" out of "+ _wc+": ");
 				
 				
 				incorrect =0;
@@ -179,7 +193,15 @@ public class Quiz extends JFrame implements ActionListener {
 					//Result message to user
 					label2.setText("Failed Test");
 
+					_attempts++;
+					_fails++;
+					
+					//Adding failed word to the failed list.
+					failed();
+					failedTotal();
+					
 					//Changing field as needed
+					
 					_testNo++;
 					incorrect =0;
 					
@@ -187,14 +209,10 @@ public class Quiz extends JFrame implements ActionListener {
 					label.setText("Spell word "+(_testNo)+" out of "+_maxNum+": ");
 					if(_wc<_maxNum)
 						label.setText("Spell word "+(_testNo)+" out of "+ _wc+": ");
-					
-					//Adding failed word to the failed list.
-					failed();
-					failedTotal();
 
 				}
 			}
-			
+			updateAccuracy();
 			//Clearing the Jtext field
 			txt.setText("");
 			//If test is finished
@@ -214,10 +232,28 @@ public class Quiz extends JFrame implements ActionListener {
 			excep.printStackTrace();
 		}
 	}
+	
+	private void changeVoice(String voice) throws IOException{
+		File failed = new File(".festivalrc");
+		//If file does not exist, create new file
+		if(!failed.exists()) {
+			failed.createNewFile();
+		} 
+		
+		//Appending the word to the file
+		Writer output;
+		output = new BufferedWriter(new FileWriter(failed,false)); 
+		output.append("(set! voice_default '"+voice +")");
+		output.close();
+	}
+	
+	/*
 	//Method that tells u if a string contains something other than alphabet
 	private boolean onlyAlphabet(String s){
 		return s.matches("[a-zA-Z]+");
 	}
+	*/
+	
 	//Method that uses festival to speak out the string passed into it
 	private void festival(String tts) throws Exception{
 		Festival say = new Festival(tts);
@@ -225,41 +261,17 @@ public class Quiz extends JFrame implements ActionListener {
 	
 	}
 	
-	class Festival extends SwingWorker<Void, Integer> {
-		private String _tts;
+	//Speaking out the spelling of the word passed into it
+	private void festivalAlphabet(String tts) throws Exception{
+		String word="";
+		String[] alpha = tts.split("");
 		
-		public Festival(String tts){
-			_tts=tts;
-		}
-		
-		@Override
-		protected Void doInBackground() throws Exception {
-			festivals(_tts);
-			return null;
-		}
-		
-		private void festivals(String tts) throws Exception{
-			//command to be excuted.
-			String cmd = "echo "+tts+"| festival --tts";
-			ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
-			//Excute the command
-			Process process = builder.start();
-			//Wait for the previous process to be finihsed
-			process.waitFor();
-		
-		}
-		
+		for(int i=0;i<alpha.length;i++)
+			 word = word + alpha[i]+" ";
+		festival(word);
 	}
 	
 	/*
-	//Speaking out the spelling of the word passed into it
-	private void festivalAlphabet(String tts) throws Exception{
-		
-		String[] alpha = tts.split("");
-		for(int i=0;i<alpha.length;i++)
-			festival(alpha[i]);
-	}
-	
 	//Setting the word to be tested using getRandomWord method from word list
 	private void setWord() throws IOException{
 		WordList wordlist = new WordList(_file);
@@ -269,6 +281,36 @@ public class Quiz extends JFrame implements ActionListener {
 	
 	private void setTestList(WordList wordlist) throws IOException{
 		_testList = wordlist.createTestList(_level,_maxNum);	
+	}
+	
+	private void getAccuracy() throws IOException {
+		File accuracy = new File(".accuracy_" + _level);
+		if (! accuracy.exists()) {
+			accuracy.createNewFile();
+		} else {
+		
+			FileReader fr = new FileReader(accuracy);
+			BufferedReader br = new BufferedReader(fr);
+			String str;
+			str = br.readLine();
+			_attempts = Integer.parseInt(str);
+			str = br.readLine();
+			_fails = Integer.parseInt(str);
+			
+		}
+	}
+	private void updateAccuracy() throws IOException {
+		File accuracy = new File(".accuracy_" + _level);
+	
+		PrintWriter pw = new PrintWriter(accuracy);
+		pw.close();
+		
+		FileWriter fw = new FileWriter(accuracy);
+		BufferedWriter bw = new BufferedWriter(fw);
+		
+		bw.write(_attempts + "\n");
+		bw.write(_fails);
+		bw.close();
 	}
 	
 	//Putting Failed word into failed list
