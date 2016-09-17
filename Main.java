@@ -80,7 +80,7 @@ public class Main extends JFrame implements ActionListener {
 					}else{
 					//else start the quiz
 					setVisible(false);
-					Quiz q = new Quiz("wordlist",this);
+					Quiz q = new Quiz("wordlist",this,1);
 					q.setVisible(true);
 					}
 				}
@@ -88,18 +88,19 @@ public class Main extends JFrame implements ActionListener {
 			//If review button is clicked
 			}else if (button.equals(review)){  
 				
-				File f = new File(".failed");
+				File f = new File(".failed"+1);
 				//If failed file does not exist or there is no word inside it
 				if(!f.exists()){
-					JOptionPane.showMessageDialog(this, "No failed word to be tested!!", "Warning", getDefaultCloseOperation());
+					JOptionPane.showMessageDialog(this, "No failed word to be tested!!!", "Warning", getDefaultCloseOperation());
 				}else{ 
-					WordList word = new WordList(".failed");
+					WordList word = new WordList(".failed",1);
+					int n = word.getWordCount(1);
 					if(word.getWordCount(1)<1){
 						JOptionPane.showMessageDialog(this, "No failed word to be tested!!", "Warning", getDefaultCloseOperation());
 					}else{
 					//else start the review
 					setVisible(false);
-					Quiz q = new Quiz(".failed",this);
+					Quiz q = new Quiz(".failed",this,1);
 					q.setVisible(true);
 					}
 				}

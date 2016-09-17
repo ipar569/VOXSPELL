@@ -14,7 +14,9 @@ import java.util.Random;
 public class WordList {
 	
 	private ArrayList<String> _wordList=new ArrayList<String>();
+	
 	private int[] pos = new int[11];
+	private boolean _failed = false;
 	
 	public WordList(String file) throws IOException{
 		
@@ -48,28 +50,32 @@ public class WordList {
 		while ((line = wordlist.readLine()) != null){
 			if(!"".equals(line.trim())){
 				_wordList.add(line);
-				String[] lines = line.split("");
-				if(lines[0].equals("%")){
-					if(_wordList.size()<1)
-						pos[a] = 0;
-					else
-						pos[a] = _wordList.size()-1;
-					a++;
-				}
 			}
 		}
+		_failed = true;
 }
 	
 	//Return wordCount for each level.
 	public int getWordCount(int level){
+		if(_failed){
+			LinkedHashSet<String> temp = new LinkedHashSet<String>(_wordList);
+			return temp.size();
+		}
 		return pos[level]-1-pos[level-1];
 	}
 	
 	//Get random word from the arrayList
 	public String getRandomWord(int level){
 		Random r = new Random();
-		
+		LinkedHashSet<String> temp = new LinkedHashSet<String>(_wordList);
+		ArrayList<String> testList = new ArrayList<String>();
+		testList.addAll(temp);
 		//Getting random position
+		
+		if(_failed){
+			int rand = Math.abs(r.nextInt()) % testList.size();
+			return testList.get(rand);
+		}
 		int rand = Math.abs(r.nextInt()) % this.getWordCount(level);
 		return _wordList.get(rand+pos[level-1]+1);
 	}
@@ -82,8 +88,12 @@ public class WordList {
 	
 	public ArrayList<String> createTestList(int level, int num){
 		LinkedHashSet<String> list = new LinkedHashSet<String>();
-		while(list.size()<num||list.size()<getWordCount(level))
+		int n = getWordCount(level);
+		while(list.size()<num||list.size()<n){
 			list.add(getRandomWord(level));
+			if(list.size()==n)
+				break;
+		}
 		
 		ArrayList<String> testList = new ArrayList<String>();
 		testList.addAll(list);
