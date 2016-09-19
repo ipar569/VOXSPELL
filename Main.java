@@ -29,31 +29,31 @@ import javax.swing.SwingUtilities;
  */
 
 public class Main extends JFrame implements ActionListener {
-	
+
 	//Fields defining the buttons to be used
 	private JButton quiz = new JButton("New Spelling Quiz");
 	private JButton review = new JButton("Review Mistakes");
 	private JButton viewStats = new JButton("View Statistics");
 	private JButton clearStats = new JButton("Clear Statistics");
 	private JLabel label = new JLabel("Welcome to the Spelling Aid Level!!");
-	
+
 	private JPanel menuPanel = new JPanel();
 	private int _level;
-	
+
 	public Main() {
-		
+
 		//Setting the size of the main menu and choosing the layout of it.
 		setSize(500,500);
 		//Choose default close option.
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		
+
 		menuPanel.setLayout(new GridLayout(5,1,2,2));
-		
+
 		//Entering the heading of the main menu to make it look more user freindly.
-		
+
 		label.setHorizontalAlignment(SwingConstants.CENTER);
 		label.setFont(new Font("Arial",Font.BOLD, 18));
-		
+
 		//Adding the heading label to the main menu
 		menuPanel.add(label);
 		//Adding Actionlistener to each buttons
@@ -61,15 +61,15 @@ public class Main extends JFrame implements ActionListener {
 		review.addActionListener(this);
 		viewStats.addActionListener(this);
 		clearStats.addActionListener(this);
-		
+
 		//Adding buttons to the Main menu.
 		menuPanel.add(quiz);
 		menuPanel.add(review);
 		menuPanel.add(viewStats);
 		menuPanel.add(clearStats);
-		
+
 		this.add(menuPanel);
-		
+
 		/*
 		JPanel tempPanel = new JPanel();
 		tempPanel.setLayout(null);
@@ -89,30 +89,30 @@ public class Main extends JFrame implements ActionListener {
 		tempPanel.add(levelLabel);
 		tempPanel.add(levelList);
 		this.add(tempPanel);
-		*/
-		
+		 */
+
 	}
-	
+
 	private void levelSelect() {
 		String[] levelStrings = { "1", "2", "3", "4", "5", "6", "7", "8", 
 				"9", "10", "11" };
 		final JComboBox<String> combo = new JComboBox<>(levelStrings);
 		String[] options = { "OK" };
-		
+
 		/*_level = JOptionPane.showOptionDialog(this, combo, "Please select a level:",
 				JOptionPane.DEFAULT_OPTION	,JOptionPane.PLAIN_MESSAGE, null, options, options[0]); */
-				
+
 		String num = (String) JOptionPane.showInputDialog(this, "Please select a level", "Level Select", 
 				JOptionPane.PLAIN_MESSAGE, null, levelStrings, levelStrings[0]);
 		_level = Integer.parseInt(num);
 		this.setVisible(true);
 		setTitle();
 	}
-	
+
 	public void setTitle(){
 		label.setText("Welcome to the Spelling Aid Level"+_level+"!!");
 	}
-	
+
 	private void menu() {
 		getContentPane().removeAll();
 		getContentPane().add(menuPanel);
@@ -120,38 +120,38 @@ public class Main extends JFrame implements ActionListener {
 		repaint();
 	}
 
-	
+
 
 	public void actionPerformed(ActionEvent e) {
 		//Finding the button where the action event occured i.e. finding 
 		//the button that is clicked
 		JButton button = (JButton) e.getSource();  
 		try {
-			
+
 			//If quiz button is clicked
 			if (button.equals(quiz)){  
-				
+
 				//If no wordlist is found show error message to user
 				File f = new File("wordlist");
 				if(!f.exists()){
 					JOptionPane.showMessageDialog(this, "No wordlist file is found!!\n(Please place wordlist file in the working directory)", "Warning", getDefaultCloseOperation());
-				//If there is no word inside the lsit
+					//If there is no word inside the lsit
 				}else{ 
 					WordList word = new WordList("wordlist");
 					if(word.getWordCount(_level)<1){
 						JOptionPane.showMessageDialog(this, "No word to be tested!!", "Warning", getDefaultCloseOperation());
 					}else{
-					//else start the quiz
-					setVisible(false);
-					Quiz q = new Quiz("wordlist",this, _level);
+						//else start the quiz
+						setVisible(false);
+						Quiz q = new Quiz("wordlist",this, _level);
 
-					q.setVisible(true);
+						q.setVisible(true);
 					}
 				}
 				return;  
-			//If review button is clicked
+				//If review button is clicked
 			}else if (button.equals(review)){  
-				
+
 				File f = new File(".failed"+_level);
 				//If failed file does not exist or there is no word inside it
 				if(!f.exists()){
@@ -162,14 +162,14 @@ public class Main extends JFrame implements ActionListener {
 					if(word.getWordCount(_level)<1){
 						JOptionPane.showMessageDialog(this, "No failed word to be tested!!", "Warning", getDefaultCloseOperation());
 					}else{
-					//else start the review
-					setVisible(false);
-					Quiz q = new Quiz(".failed",this, _level);
-					q.setVisible(true);
+						//else start the review
+						setVisible(false);
+						Quiz q = new Quiz(".failed",this, _level);
+						q.setVisible(true);
 					}
 				}
 				return;  
-			//If viewStats button is clicked
+				//If viewStats button is clicked
 			}else if (button.equals(viewStats)){  
 
 				//ViewStats view = new ViewStats();
@@ -177,7 +177,7 @@ public class Main extends JFrame implements ActionListener {
 				makeTable();
 
 				return;  
-			//If clearStats button is clicked
+				//If clearStats button is clicked
 			}else if (button.equals(clearStats)){  
 				int dialogButton = JOptionPane.YES_NO_OPTION;
 				int clear = JOptionPane.showConfirmDialog (this, "Would You Like to Clear the Statistics?","Warning",dialogButton);
@@ -193,30 +193,38 @@ public class Main extends JFrame implements ActionListener {
 		}
 
 	}
-	
+
 	private void makeTable() {
 		ViewAccuracy va = new ViewAccuracy();
 		JTable table = new JTable(va);
-		
+
 		//Create panels for Statistics. Add table to panel.
-				JPanel statsPanel = new JPanel();
-				statsPanel.setLayout(new BorderLayout());
-				//statsPanel.add(_statLabel, BorderLayout.NORTH);
-				statsPanel.add(new JScrollPane(table), BorderLayout.CENTER);
-				//returnBtn.addActionListener(this);
-				//statsPanel.add(returnBtn, BorderLayout.SOUTH);
-				
-				//replace current panel with the Stats panel
-				getContentPane().removeAll();
-				getContentPane().add(statsPanel);
-				revalidate();
-				repaint();
+		JPanel statsPanel = new JPanel();
+		JButton returnBtn = new JButton("Return to menu");
+		statsPanel.setLayout(new BorderLayout());
+		//statsPanel.add(_statLabel, BorderLayout.NORTH);
+		statsPanel.add(new JScrollPane(table), BorderLayout.CENTER);
+		returnBtn.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				menu();
+			}
+			
+		});
+		statsPanel.add(returnBtn, BorderLayout.SOUTH);
+
+		//replace current panel with the Stats panel
+		getContentPane().removeAll();
+		getContentPane().add(statsPanel);
+		revalidate();
+		repaint();
 	}
-	
-		public void nextLevel(){
+
+	public void nextLevel(){
 		_level++;
 	}
-	
+
 	/*
 	 * main method that brings up the main menu
 	 */
@@ -225,27 +233,57 @@ public class Main extends JFrame implements ActionListener {
 			@Override
 			public void run() {
 				Main frame = new Main();
+				frame.createAccuracy();
 				frame.levelSelect();
 			}
 		});
 	}
-	
+
 	//This method clears the stats by overwriting existing files that
 	//stores information.
 	private void clearStats() throws IOException{
 		//String array contains the name of the files to be cleared.
 		String[] files = {".mastered",".faulted",".failed_total",".failed"};
-		
+
 		for(String f:files){
 			//Check if file exist or not and if don't exist, create new one.
 			File file = new File(f);
-				if(!file.exists()) {
-					file.createNewFile();
+			if(!file.exists()) {
+				file.createNewFile();
 			} 
 			//If exist clear the file by setting append to false.
 			Writer output;
 			output = new BufferedWriter(new FileWriter(f,false));
 			output.close();
+		}
+
+		for (int i = 1; i <= 11; i++) {
+			File accuracy = new File(".accuracy_" + i);
+			accuracy.delete();
+		}
+		createAccuracy();
+	}
+
+	private void createAccuracy() {
+
+		for (int i = 1; i <= 11; i++) {
+			try {
+				File accuracy = new File(".accuracy_" + i);
+				if (! accuracy.exists()) {
+					accuracy.createNewFile();
+
+					FileWriter fw = new FileWriter(accuracy);
+					BufferedWriter bw = new BufferedWriter(fw);
+
+					bw.write("0" + "\n");
+					bw.write("0" + "\n");
+
+					bw.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
 		}
 	}
 

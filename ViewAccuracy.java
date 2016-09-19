@@ -12,8 +12,8 @@ public class ViewAccuracy extends AbstractTableModel{
 	private ArrayList<Integer> failsList = new ArrayList<Integer>();
 	private ArrayList<Double> accuracyList = new ArrayList<Double>();
 	
-	private final String[] COLUMN_HEADERS = {"Level", "Accuracy" };
-	private final Class<?> _colClasses[] = {String.class, String.class};
+	private final String[] COLUMN_HEADERS = {"Level", "Accuracy", "Attempts" };
+	private final Class<?> _colClasses[] = {String.class, String.class, Integer.class};
 
 
 
@@ -39,6 +39,8 @@ public class ViewAccuracy extends AbstractTableModel{
 			if (attemptsList.get(j) != 0) {
 				num = (double) failsList.get(j) / (double) attemptsList.get(j);
 				num = 100 - (num * 100);
+				
+				num = (double) Math.round(num * 100) / 100;
 			} else {
 				num = 0;
 			}
@@ -57,7 +59,7 @@ public class ViewAccuracy extends AbstractTableModel{
 	@Override
 	public int getColumnCount() {
 		// TODO Auto-generated method stub
-		return 2;
+		return 3;
 	}
 
 	@Override
@@ -68,6 +70,8 @@ public class ViewAccuracy extends AbstractTableModel{
 			return "Level " + tempRow;
 		} else if (columnIndex == 1) {
 			return accuracyList.get(rowIndex) + "%";
+		} else if (columnIndex == 2) {
+			return attemptsList.get(rowIndex);
 		}
 		return null;
 	}

@@ -60,7 +60,6 @@ public class Quiz extends JFrame implements ActionListener {
 		_main=main;
 		_file=file;
 		_level = level;
-		createAccuracy();
 		getAccuracy();
 		
 		_selectVoices = selectVoice();
@@ -322,7 +321,7 @@ public class Quiz extends JFrame implements ActionListener {
 		_testList = wordlist.createTestList(_level,_maxNum);	
 	}
 	
-	protected void createAccuracy() throws IOException {
+	private void createAccuracy() throws IOException {
 		
 		for (int i = 1; i <= 11; i++) {
 			File accuracy = new File(".accuracy_" + i);
