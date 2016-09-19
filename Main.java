@@ -1,5 +1,6 @@
 package prototype;
 
+import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -18,6 +19,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
@@ -164,8 +167,9 @@ public class Main extends JFrame implements ActionListener {
 			//If viewStats button is clicked
 			}else if (button.equals(viewStats)){  
 
-				ViewStats view = new ViewStats();
-				view.setVisible(true);
+				//ViewStats view = new ViewStats();
+				//view.setVisible(true);
+				makeTable();
 
 				return;  
 			//If clearStats button is clicked
@@ -183,6 +187,25 @@ public class Main extends JFrame implements ActionListener {
 			e1.printStackTrace();
 		}
 
+	}
+	
+	private void makeTable() {
+		ViewAccuracy va = new ViewAccuracy();
+		JTable table = new JTable(va);
+		
+		//Create panels for Statistics. Add table to panel.
+				JPanel statsPanel = new JPanel();
+				statsPanel.setLayout(new BorderLayout());
+				//statsPanel.add(_statLabel, BorderLayout.NORTH);
+				statsPanel.add(new JScrollPane(table), BorderLayout.CENTER);
+				//returnBtn.addActionListener(this);
+				//statsPanel.add(returnBtn, BorderLayout.SOUTH);
+				
+				//replace current panel with the Stats panel
+				getContentPane().removeAll();
+				getContentPane().add(statsPanel);
+				revalidate();
+				repaint();
 	}
 	
 	/*

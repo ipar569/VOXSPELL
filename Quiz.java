@@ -54,6 +54,7 @@ public class Quiz extends JFrame implements ActionListener {
 		_main=main;
 		_file=file;
 		_level = level;
+		createAccuracy();
 		getAccuracy();
 		//Setting the size and layout of the spelling quiz
 		setSize(500,500);
@@ -283,6 +284,24 @@ public class Quiz extends JFrame implements ActionListener {
 		_testList = wordlist.createTestList(_level,_maxNum);	
 	}
 	
+	protected void createAccuracy() throws IOException {
+		
+		for (int i = 1; i <= 11; i++) {
+			File accuracy = new File(".accuracy_" + i);
+			if (! accuracy.exists()) {
+				accuracy.createNewFile();
+				
+				FileWriter fw = new FileWriter(accuracy);
+				BufferedWriter bw = new BufferedWriter(fw);
+				
+				bw.write("0" + "\n");
+				bw.write("0" + "\n");
+				
+				bw.close();
+			}
+
+		}
+	}
 	private void getAccuracy() throws IOException {
 		File accuracy = new File(".accuracy_" + _level);
 		if (! accuracy.exists()) {
@@ -309,7 +328,7 @@ public class Quiz extends JFrame implements ActionListener {
 		BufferedWriter bw = new BufferedWriter(fw);
 		
 		bw.write(_attempts + "\n");
-		bw.write(_fails);
+		bw.write(_fails + "\n");
 		bw.close();
 	}
 	

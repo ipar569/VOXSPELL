@@ -26,6 +26,8 @@ public class MediaPlayer {
 	private JFrame mediaFrame = new JFrame();
 	private String mediaPath = "";
 	
+	private boolean pause = true;
+	
 	MediaPlayer() {
 
         NativeLibrary.addSearchPath(
@@ -40,7 +42,23 @@ public class MediaPlayer {
 	       panel.add(mediaPlayerComponent, BorderLayout.CENTER);
 	        
 	       mediaFrame.setContentPane(panel);
-        
+        final JButton pauseBtn = new JButton("Pause");
+        panel.add(pauseBtn, BorderLayout.SOUTH);
+        pauseBtn.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				video.pause();	
+				if (pause) {
+					pauseBtn.setText("Play");
+					pause = false;
+				} else {
+					pauseBtn.setText("Pause");
+					pause = true;
+				}
+			}
+        	
+        });
         mediaPath = "big_buck_bunny_1_minute.avi";
         
         mediaFrame.setLocation(100, 100);
@@ -52,4 +70,3 @@ public class MediaPlayer {
 	}
 
 }
-
