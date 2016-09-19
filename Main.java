@@ -10,10 +10,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
@@ -28,23 +32,26 @@ public class Main extends JFrame implements ActionListener {
 	private JButton review = new JButton("Review Mistakes");
 	private JButton viewStats = new JButton("View Statistics");
 	private JButton clearStats = new JButton("Clear Statistics");
+	private JLabel label = new JLabel("Welcome to the Spelling Aid Level!!");
+	private JPanel menuPanel = new JPanel();
+	private int _level;
 	
 	public Main() {
 		
 		//Setting the size of the main menu and choosing the layout of it.
 		setSize(500,500);
-		setLayout(new GridLayout(5,1,2,2));
 		//Choose default close option.
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
+		menuPanel.setLayout(new GridLayout(5,1,2,2));
+		
 		//Entering the heading of the main menu to make it look more user freindly.
-		JLabel label = new JLabel("Welcome to the Spelling Aid!!");
+		
 		label.setHorizontalAlignment(SwingConstants.CENTER);
 		label.setFont(new Font("Arial",Font.BOLD, 18));
 		
 		//Adding the heading label to the main menu
-		add(label);
-		
+		menuPanel.add(label);
 		//Adding Actionlistener to each buttons
 		quiz.addActionListener(this);
 		review.addActionListener(this);
@@ -52,11 +59,61 @@ public class Main extends JFrame implements ActionListener {
 		clearStats.addActionListener(this);
 		
 		//Adding buttons to the Main menu.
-		add(quiz);
-		add(review);
-		add(viewStats);
-		add(clearStats);
+		menuPanel.add(quiz);
+		menuPanel.add(review);
+		menuPanel.add(viewStats);
+		menuPanel.add(clearStats);
 		
+		this.add(menuPanel);
+		
+		/*
+		JPanel tempPanel = new JPanel();
+		tempPanel.setLayout(null);
+		JLabel levelLabel = new JLabel("Please select a level:");
+		levelLabel.setBounds(170, 150, 250, 50);
+		String[] levelStrings = { "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", 
+				"Nine", "Ten", "Eleven" };
+		final JComboBox levelList = new JComboBox(levelStrings);		
+		Action boxAction = new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				_level = (String)levelList.getSelectedItem();
+				menu();
+			}
+		};
+		levelList.addActionListener(boxAction);
+		levelList.setBounds(190, 200, 100, 30);
+		tempPanel.add(levelLabel);
+		tempPanel.add(levelList);
+		this.add(tempPanel);
+		*/
+		
+	}
+	
+	private void levelSelect() {
+		String[] levelStrings = { "1", "2", "3", "4", "5", "6", "7", "8", 
+				"9", "10", "11" };
+		final JComboBox<String> combo = new JComboBox<>(levelStrings);
+		String[] options = { "OK" };
+		
+		/*_level = JOptionPane.showOptionDialog(this, combo, "Please select a level:",
+				JOptionPane.DEFAULT_OPTION	,JOptionPane.PLAIN_MESSAGE, null, options, options[0]); */
+				
+		String num = (String) JOptionPane.showInputDialog(this, "Please select a level", "Level Select", 
+				JOptionPane.PLAIN_MESSAGE, null, levelStrings, levelStrings[0]);
+		_level = Integer.parseInt(num);
+		this.setVisible(true);
+		setTitle();
+	}
+	
+	public void setTitle(){
+		label.setText("Welcome to the Spelling Aid Level"+_level+"!!");
+	}
+	
+	private void menu() {
+		getContentPane().removeAll();
+		getContentPane().add(menuPanel);
+		revalidate();
+		repaint();
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -75,12 +132,12 @@ public class Main extends JFrame implements ActionListener {
 				//If there is no word inside the lsit
 				}else{ 
 					WordList word = new WordList("wordlist");
-					if(word.getWordCount(1)<1){
+					if(word.getWordCount(_level)<1){
 						JOptionPane.showMessageDialog(this, "No word to be tested!!", "Warning", getDefaultCloseOperation());
 					}else{
 					//else start the quiz
 					setVisible(false);
-					Quiz q = new Quiz("wordlist",this,1);
+					Quiz q = new Quiz("wordlist",this, _level);
 					q.setVisible(true);
 					}
 				}
@@ -88,19 +145,18 @@ public class Main extends JFrame implements ActionListener {
 			//If review button is clicked
 			}else if (button.equals(review)){  
 				
-				File f = new File(".failed"+1);
+				File f = new File(".failed"+_level);
 				//If failed file does not exist or there is no word inside it
 				if(!f.exists()){
-					JOptionPane.showMessageDialog(this, "No failed word to be tested!!!", "Warning", getDefaultCloseOperation());
+					JOptionPane.showMessageDialog(this, "No failed word to be tested!!", "Warning", getDefaultCloseOperation());
 				}else{ 
-					WordList word = new WordList(".failed",1);
-					int n = word.getWordCount(1);
-					if(word.getWordCount(1)<1){
+					WordList word = new WordList(".failed",_level);
+					if(word.getWordCount(_level)<1){
 						JOptionPane.showMessageDialog(this, "No failed word to be tested!!", "Warning", getDefaultCloseOperation());
 					}else{
 					//else start the review
 					setVisible(false);
-					Quiz q = new Quiz(".failed",this,1);
+					Quiz q = new Quiz(".failed",this, _level);
 					q.setVisible(true);
 					}
 				}
@@ -129,6 +185,10 @@ public class Main extends JFrame implements ActionListener {
 
 	}
 	
+	public void nextLevel(){
+		_level++;
+	}
+	
 	/*
 	 * main method that brings up the main menu
 	 */
@@ -137,7 +197,8 @@ public class Main extends JFrame implements ActionListener {
 			@Override
 			public void run() {
 				Main frame = new Main();
-				frame.setVisible(true);
+				
+				frame.levelSelect();
 			}
 		});
 	}
@@ -160,4 +221,5 @@ public class Main extends JFrame implements ActionListener {
 			output.close();
 		}
 	}
+
 }
