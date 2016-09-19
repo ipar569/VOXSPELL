@@ -35,6 +35,7 @@ public class Main extends JFrame implements ActionListener {
 	private JButton review = new JButton("Review Mistakes");
 	private JButton viewStats = new JButton("View Statistics");
 	private JButton clearStats = new JButton("Clear Statistics");
+	private JLabel label = new JLabel("Welcome to the Spelling Aid Level!!");
 	
 	private JPanel menuPanel = new JPanel();
 	private int _level;
@@ -49,7 +50,7 @@ public class Main extends JFrame implements ActionListener {
 		menuPanel.setLayout(new GridLayout(5,1,2,2));
 		
 		//Entering the heading of the main menu to make it look more user freindly.
-		JLabel label = new JLabel("Welcome to the Spelling Aid!!");
+		
 		label.setHorizontalAlignment(SwingConstants.CENTER);
 		label.setFont(new Font("Arial",Font.BOLD, 18));
 		
@@ -103,9 +104,13 @@ public class Main extends JFrame implements ActionListener {
 				
 		String num = (String) JOptionPane.showInputDialog(this, "Please select a level", "Level Select", 
 				JOptionPane.PLAIN_MESSAGE, null, levelStrings, levelStrings[0]);
-		System.out.println(num);
 		_level = Integer.parseInt(num);
-		System.out.println(_level);
+		this.setVisible(true);
+		setTitle();
+	}
+	
+	public void setTitle(){
+		label.setText("Welcome to the Spelling Aid Level"+_level+"!!");
 	}
 	
 	private void menu() {
@@ -114,6 +119,8 @@ public class Main extends JFrame implements ActionListener {
 		revalidate();
 		repaint();
 	}
+
+	
 
 	public void actionPerformed(ActionEvent e) {
 		//Finding the button where the action event occured i.e. finding 
@@ -145,21 +152,19 @@ public class Main extends JFrame implements ActionListener {
 			//If review button is clicked
 			}else if (button.equals(review)){  
 				
-				File f = new File(".failed"+1);
+				File f = new File(".failed"+_level);
 				//If failed file does not exist or there is no word inside it
 				if(!f.exists()){
-					JOptionPane.showMessageDialog(this, "No failed word to be tested!!!", "Warning", getDefaultCloseOperation());
+					JOptionPane.showMessageDialog(this, "No failed word to be tested!!", "Warning", getDefaultCloseOperation());
 				}else{ 
 
-					WordList word = new WordList(".failed",1);
-					int n = word.getWordCount(1);
-					if(word.getWordCount(1)<1){
+					WordList word = new WordList(".failed",_level);
+					if(word.getWordCount(_level)<1){
 						JOptionPane.showMessageDialog(this, "No failed word to be tested!!", "Warning", getDefaultCloseOperation());
 					}else{
 					//else start the review
 					setVisible(false);
 					Quiz q = new Quiz(".failed",this, _level);
-
 					q.setVisible(true);
 					}
 				}
@@ -208,6 +213,10 @@ public class Main extends JFrame implements ActionListener {
 				repaint();
 	}
 	
+		public void nextLevel(){
+		_level++;
+	}
+	
 	/*
 	 * main method that brings up the main menu
 	 */
@@ -216,7 +225,6 @@ public class Main extends JFrame implements ActionListener {
 			@Override
 			public void run() {
 				Main frame = new Main();
-				frame.setVisible(true);
 				frame.levelSelect();
 			}
 		});
