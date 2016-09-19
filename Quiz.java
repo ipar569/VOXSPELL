@@ -16,10 +16,12 @@ import java.io.Writer;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
@@ -43,7 +45,10 @@ public class Quiz extends JFrame implements ActionListener {
 	private ArrayList<String> _testList = new ArrayList<String>();
 	private int _maxNum;
 	private int _level;
-	
+	private int _correct;
+	private String _voice;
+	private ArrayList<String> _voices;
+	private JComboBox<String> _selectVoices;
 	
 	//Constructor takes two input. One file name contained the wordlist and second is 
 	//the object where the quiz is excuted.
@@ -52,6 +57,9 @@ public class Quiz extends JFrame implements ActionListener {
 		_main=main;
 		_file=file;
 		_level = level;
+		
+		_selectVoices = selectVoice();
+		_voice = _voices.get(0);
 		
 		//Setting the size and layout of the spelling quiz
 		setSize(500,500);
@@ -89,7 +97,7 @@ public class Quiz extends JFrame implements ActionListener {
 			tts="Spell word 1 out of "+_wc+": ";
 			label = new JLabel(tts);
 		}else{
-			tts="Spell word 1 out of "+_maxNum+"?: ";
+			tts="Spell word 1 out of "+_maxNum+": ";
 			label = new JLabel(tts);
 		}
 		
@@ -119,6 +127,9 @@ public class Quiz extends JFrame implements ActionListener {
 		add(label1);
 		add(middle);
 		add(label2);
+		add(_selectVoices);
+		
+		_selectVoices.addActionListener(this);
 		
 		//Adding action listeners to the button.
 		btn.addActionListener(this);
@@ -126,16 +137,19 @@ public class Quiz extends JFrame implements ActionListener {
 		spelling.addActionListener(this);
 		
 		//Speaking out instruction to start and the word to be tested.
-		festival(tts+_testList.get(_testNo-1));
+		festival(tts+"  " +_testList.get(_testNo-1));
 		
 	}
 
 	public void actionPerformed(ActionEvent e) {
 		//Getting the word that user wrote
 		String word = txt.getText();
-		//boolean b = onlyAlphabet(word);
-			
 		
+		if(e.getSource().equals(_selectVoices)){
+		String data = (String) _selectVoices.getItemAt(_selectVoices.getSelectedIndex());
+		_voice = data;
+		return;
+		}
 		try{
 			//If user pressed speak button, spelling of the word
 			//is spoken by festival.
@@ -168,6 +182,7 @@ public class Quiz extends JFrame implements ActionListener {
 				
 				//Increase the test number
 				_testNo++;
+				_correct++;
 				
 				//Setting the new label
 				label.setText("Spell word "+(_testNo)+" out of "+_maxNum+": ");
@@ -215,12 +230,18 @@ public class Quiz extends JFrame implements ActionListener {
 			//If test is finished
 			if((_testNo==_maxNum+1)||(_wc<_testNo)){
 				//Telling the user the teset is finished
-				label2.setText("Quiz Finished!!");
+				label2.setText(label2.getText()+" Quiz Finished!!");
 				festival(label2.getText());
-				
+				if(_maxNum==5){
 				//Bring back the main menu
 				_main.setVisible(true);
 				dispose();
+				}else{
+					SubMenu sub = new SubMenu(_file,_main,_level,_correct,_testNo-1);
+					sub.setVisible(true);
+					dispose();
+				}
+				
 			}else{
 				//Continue the quiz
 				festival(label2.getText()+" "+label.getText()+" "+_testList.get(_testNo-1));
@@ -228,6 +249,21 @@ public class Quiz extends JFrame implements ActionListener {
 		}catch(Exception excep){
 			excep.printStackTrace();
 		}
+	}
+	
+	private JComboBox<String> selectVoice() throws Exception{
+
+		Festival f = new Festival("","");
+		_voices = f.listOfVoices();
+		
+		String[] str = new String[_voices.size()];
+		for(int i = 0;i<_voices.size();i++)str[i]=_voices.get(i);
+
+		
+		JComboBox<String> voices = new JComboBox<String>(str);
+		
+		
+		return voices;
 	}
 	
 	private void changeVoice(String voice) throws IOException{
@@ -253,7 +289,7 @@ public class Quiz extends JFrame implements ActionListener {
 	
 	//Method that uses festival to speak out the string passed into it
 	private void festival(String tts) throws Exception{
-		Festival say = new Festival(tts);
+		Festival say = new Festival(tts,_voice);
 		say.execute();
 	
 	}
@@ -374,6 +410,34 @@ public class Quiz extends JFrame implements ActionListener {
 		Writer output;
 		output = new BufferedWriter(new FileWriter(faulted,true));
 		output.append(_testList.get(_testNo-1)+"\n");
+		output.close();
+	}
+	
+	private void accuracyCorrect() throws IOException{
+		File faulted = new File(".accuracy"+_level);
+		//If file does not exist, create new file
+		if(!faulted.exists()) {
+			faulted.createNewFile();
+		} 
+
+		//Appending the word to the file
+		Writer output;
+		output = new BufferedWriter(new FileWriter(faulted,true));
+		output.append("o\n");
+		output.close();
+	}
+	
+	private void accuracyIncorrect() throws IOException{
+		File faulted = new File(".accuracy"+_level);
+		//If file does not exist, create new file
+		if(!faulted.exists()) {
+			faulted.createNewFile();
+		} 
+
+		//Appending the word to the file
+		Writer output;
+		output = new BufferedWriter(new FileWriter(faulted,true));
+		output.append("x\n");
 		output.close();
 	}
 }
