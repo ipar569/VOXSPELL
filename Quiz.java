@@ -179,7 +179,6 @@ public class Quiz extends JFrame implements ActionListener {
 				//Remove word from failed test list
 				removeFailed(_testList.get(_testNo-1));
 				
-				_attempts++;
 				
 				//If user gets incorrect first time, the word is added to faulted list
 				/*if(incorrect==1){

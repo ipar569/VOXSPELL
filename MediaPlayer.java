@@ -3,6 +3,8 @@ package prototype;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -61,6 +63,14 @@ public class MediaPlayer {
         });
         mediaPath = "big_buck_bunny_1_minute.avi";
         
+        mediaFrame.addWindowListener(new WindowAdapter() {
+        	@Override
+        	public void windowClosing(WindowEvent e) {
+        		video.stop();
+        		System.exit(0);
+        	}
+        });
+        
         mediaFrame.setLocation(100, 100);
         mediaFrame.setSize(1050, 600);
         mediaFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -68,6 +78,7 @@ public class MediaPlayer {
         mediaFrame.setVisible(true);
         
         video.playMedia(mediaPath);
+        
 	}
 
 }
