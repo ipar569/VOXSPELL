@@ -66,13 +66,7 @@ public class Festival extends SwingWorker<Void, Integer>{
 			Process process = builder.start();
 			//Wait for the previous process to be finihsed
 			process.waitFor();
-			cmd = "ls /usr/share/festival/voices/*us* >> ./.voices";
 			
-			builder = new ProcessBuilder("/bin/bash", "-c", cmd);
-			//Excute the command
-			process = builder.start();
-			//Wait for the previous process to be finihsed
-			process.waitFor();
 			
 			BufferedReader file = new BufferedReader(new FileReader("."+File.separator+".voices"));
 			

@@ -110,7 +110,7 @@ public class Main extends JFrame implements ActionListener {
 	}
 
 	public void setTitle(){
-		label.setText("Welcome to the Spelling Aid Level"+_level+"!!");
+		label.setText("Welcome to the Spelling Aid Level "+_level+"!!");
 	}
 
 	private void menu() {
@@ -130,18 +130,18 @@ public class Main extends JFrame implements ActionListener {
 			if (button.equals(quiz)){  
 
 				//If no wordlist is found show error message to user
-				File f = new File("wordlist");
+				File f = new File("NZCER-spelling-lists.txt");
 				if(!f.exists()){
 					JOptionPane.showMessageDialog(this, "No wordlist file is found!!\n(Please place wordlist file in the working directory)", "Warning", getDefaultCloseOperation());
 					//If there is no word inside the lsit
 				}else{ 
-					WordList word = new WordList("wordlist");
+					WordList word = new WordList("NZCER-spelling-lists.txt");
 					if(word.getWordCount(_level)<1){
 						JOptionPane.showMessageDialog(this, "No word to be tested!!", "Warning", getDefaultCloseOperation());
 					}else{
 						//else start the quiz
 						setVisible(false);
-						Quiz q = new Quiz("wordlist",this, _level);
+						Quiz q = new Quiz("NZCER-spelling-lists.txt",this, _level);
 
 						q.setVisible(true);
 					}
@@ -191,13 +191,15 @@ public class Main extends JFrame implements ActionListener {
 
 	}
 
-	private void makeTable() {
+	protected void makeTable() {
 		ViewAccuracy va = new ViewAccuracy();
 		JTable table = new JTable(va);
-
+		final JFrame fr = new JFrame();
+		fr.setSize(500,500);
+		fr.setVisible(true);
 		//Create panels for Statistics. Add table to panel.
 		JPanel statsPanel = new JPanel();
-		JButton returnBtn = new JButton("Return to menu");
+		JButton returnBtn = new JButton("Close Stats");
 		statsPanel.setLayout(new BorderLayout());
 		//statsPanel.add(_statLabel, BorderLayout.NORTH);
 		statsPanel.add(new JScrollPane(table), BorderLayout.CENTER);
@@ -205,17 +207,13 @@ public class Main extends JFrame implements ActionListener {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				menu();
+				fr.dispose();
 			}
 			
 		});
 		statsPanel.add(returnBtn, BorderLayout.SOUTH);
-
-		//replace current panel with the Stats panel
-		getContentPane().removeAll();
-		getContentPane().add(statsPanel);
-		revalidate();
-		repaint();
+		fr.add(statsPanel);
+		
 	}
 
 	public void nextLevel(){

@@ -52,6 +52,7 @@ public class Quiz extends JFrame implements ActionListener {
 	private String _voice;
 	private ArrayList<String> _voices;
 	private JComboBox<String> _selectVoices;
+	private JButton stats = new JButton("View Stats!!");
 	
 	//Constructor takes two input. One file name contained the wordlist and second is 
 	//the object where the quiz is excuted.
@@ -89,7 +90,7 @@ public class Quiz extends JFrame implements ActionListener {
 		
 		WordList wordlist;
 		//Creaeting the wordlist using the file name
-		if(file.equals("wordlist")){
+		if(file.equals("NZCER-spelling-lists.txt")){
 			wordlist = new WordList(_file);
 			_maxNum = 10;
 		}else{
@@ -136,6 +137,7 @@ public class Quiz extends JFrame implements ActionListener {
 		add(label2);
 		bottom.add(label3);
 		bottom.add(_selectVoices);
+		bottom.add(stats);
 		add(bottom);
 		
 		_selectVoices.addActionListener(this);
@@ -144,6 +146,7 @@ public class Quiz extends JFrame implements ActionListener {
 		btn.addActionListener(this);
 		speak.addActionListener(this);
 		spelling.addActionListener(this);
+		stats.addActionListener(this);
 		
 		//Speaking out instruction to start and the word to be tested.
 		festival(_testList.get(_testNo-1));
@@ -169,6 +172,9 @@ public class Quiz extends JFrame implements ActionListener {
 					return;
 				}else if (button.equals(spelling)){
 					festivalAlphabet(_testList.get(_testNo-1));
+					return;
+				}else if (button.equals(stats)){
+					_main.makeTable();
 					return;
 				}
 			//If user is correct
@@ -205,15 +211,15 @@ public class Quiz extends JFrame implements ActionListener {
 				//If second time failing
 				if(incorrect<1){
 					//Setting message to the user about the fault
-					label2.setText("Incorrect, please try again!");
-					festival(label2.getText()+"\n "+_testList.get(_testNo-1));
+					label2.setText("Incorrect, please try again!!");
+					festival(label2.getText()+" ... ... ... "+_testList.get(_testNo-1));
 					//Word is spoken again.
 					incorrect++;
 					return;
 				//First time failing
 				}else{
 					//Result message to user
-					label2.setText("Failed Test!");
+					label2.setText("Failed Test!!");
 
 					_attempts++;
 					_fails++;
@@ -255,7 +261,7 @@ public class Quiz extends JFrame implements ActionListener {
 				
 			}else{
 				//Continue the quiz
-				festival(label2.getText()+" "+_testList.get(_testNo-1));
+				festival(label2.getText()+" ... ... ... "+_testList.get(_testNo-1));
 			}
 		}catch(Exception excep){
 			excep.printStackTrace();
