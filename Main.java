@@ -120,8 +120,6 @@ public class Main extends JFrame implements ActionListener {
 		repaint();
 	}
 
-
-
 	public void actionPerformed(ActionEvent e) {
 		//Finding the button where the action event occured i.e. finding 
 		//the button that is clicked
@@ -171,7 +169,6 @@ public class Main extends JFrame implements ActionListener {
 				return;  
 				//If viewStats button is clicked
 			}else if (button.equals(viewStats)){  
-
 				//ViewStats view = new ViewStats();
 				//view.setVisible(true);
 				makeTable();

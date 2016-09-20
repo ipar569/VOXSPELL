@@ -64,6 +64,7 @@ public class MediaPlayer {
         mediaFrame.setLocation(100, 100);
         mediaFrame.setSize(1050, 600);
         mediaFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
         mediaFrame.setVisible(true);
         
         video.playMedia(mediaPath);
