@@ -191,13 +191,15 @@ public class Main extends JFrame implements ActionListener {
 
 	}
 
-	private void makeTable() {
+	protected void makeTable() {
 		ViewAccuracy va = new ViewAccuracy();
 		JTable table = new JTable(va);
-
+		final JFrame fr = new JFrame();
+		fr.setSize(500,500);
+		fr.setVisible(true);
 		//Create panels for Statistics. Add table to panel.
 		JPanel statsPanel = new JPanel();
-		JButton returnBtn = new JButton("Return to menu");
+		JButton returnBtn = new JButton("Close Stats");
 		statsPanel.setLayout(new BorderLayout());
 		//statsPanel.add(_statLabel, BorderLayout.NORTH);
 		statsPanel.add(new JScrollPane(table), BorderLayout.CENTER);
@@ -205,17 +207,13 @@ public class Main extends JFrame implements ActionListener {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				menu();
+				fr.dispose();
 			}
 			
 		});
 		statsPanel.add(returnBtn, BorderLayout.SOUTH);
-
-		//replace current panel with the Stats panel
-		getContentPane().removeAll();
-		getContentPane().add(statsPanel);
-		revalidate();
-		repaint();
+		fr.add(statsPanel);
+		
 	}
 
 	public void nextLevel(){

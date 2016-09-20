@@ -22,6 +22,8 @@ public class SubMenu extends JFrame implements ActionListener{
 	private int _level;
 	private Main _main;
 	private String _file;
+	private JButton stats = new JButton("View Stats!!");
+	
 	public SubMenu(String file, Main main, int level, int correct, int testNum){
 		//Setting the size of the main menu and choosing the layout of it.
 				_file = file;
@@ -33,7 +35,7 @@ public class SubMenu extends JFrame implements ActionListener{
 		//Choose default close option.
 				setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				
-				menuPanel.setLayout(new GridLayout(5,1,2,2));
+				menuPanel.setLayout(new GridLayout(6,1,2,2));
 				
 				//Entering the heading of the main menu to make it look more user freindly.
 				JLabel label = new JLabel("The Quiz is finished! You got "+correct+" out of "+testNum+"!!");
@@ -51,10 +53,11 @@ public class SubMenu extends JFrame implements ActionListener{
 				
 				video.addActionListener(this);
 				
+				stats.addActionListener(this);
 				//Adding buttons to the Main menu.
 				menuPanel.add(backMain);
 				menuPanel.add(repeat);
-				
+				menuPanel.add(stats);
 				if(correct>=9){
 					menuPanel.add(nextLevel);
 					menuPanel.add(video);
@@ -76,6 +79,9 @@ public class SubMenu extends JFrame implements ActionListener{
 			dispose();
 			Quiz q = new Quiz("wordlist",_main, _level);
 			q.setVisible(true);
+		}else if(button.equals(stats)){
+			_main.makeTable();
+			
 		}else if(button.equals(nextLevel)){
 			_main.setVisible(true);
 			_main.nextLevel();
