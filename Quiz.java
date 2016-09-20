@@ -256,7 +256,7 @@ public class Quiz extends JFrame implements ActionListener {
 				
 			}else{
 				//Continue the quiz
-				festival(label2.getText()+" "+_testList.get(_testNo-1));
+				festival(label2.getText()+"..."+_testList.get(_testNo-1));
 			}
 		}catch(Exception excep){
 			excep.printStackTrace();
