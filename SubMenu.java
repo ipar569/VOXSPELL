@@ -83,7 +83,6 @@ public class SubMenu extends JFrame implements ActionListener{
 			dispose();
 		}else if(button.equals(video)){
 			MediaPlayer player = new MediaPlayer();
-
 		}
 		}catch(Exception e2){
 			e2.printStackTrace();
