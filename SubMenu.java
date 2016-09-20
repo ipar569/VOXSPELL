@@ -55,7 +55,7 @@ public class SubMenu extends JFrame implements ActionListener{
 				menuPanel.add(backMain);
 				menuPanel.add(repeat);
 				
-				if(correct>=0){
+				if(correct>=9){
 					menuPanel.add(nextLevel);
 					menuPanel.add(video);
 				}
@@ -83,6 +83,7 @@ public class SubMenu extends JFrame implements ActionListener{
 			dispose();
 		}else if(button.equals(video)){
 			MediaPlayer player = new MediaPlayer();
+
 		}
 		}catch(Exception e2){
 			e2.printStackTrace();

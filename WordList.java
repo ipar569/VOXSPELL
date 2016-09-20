@@ -28,8 +28,8 @@ public class WordList {
 			while ((line = wordlist.readLine()) != null){
 				if(!"".equals(line.trim())){
 					_wordList.add(line);
-					String[] lines = line.split("");
-					if(lines[0].equals("%")){
+					String[] lines = line.split(" ");
+					if(lines[0].equals("%Level")){
 						if(_wordList.size()<1)
 							pos[a] = 0;
 						else

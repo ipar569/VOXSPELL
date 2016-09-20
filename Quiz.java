@@ -45,6 +45,7 @@ public class Quiz extends JFrame implements ActionListener {
 	private ArrayList<String> _testList = new ArrayList<String>();
 	private int _maxNum;
 	private int _level;
+
 	private int _attempts;
 	private int _fails;
 	private int _correct;
@@ -59,7 +60,7 @@ public class Quiz extends JFrame implements ActionListener {
 		_main=main;
 		_file=file;
 		_level = level;
-		createAccuracy();
+
 		getAccuracy();
 		
 		_selectVoices = selectVoice();
@@ -88,7 +89,7 @@ public class Quiz extends JFrame implements ActionListener {
 		
 		WordList wordlist;
 		//Creaeting the wordlist using the file name
-		if(file.equals("wordlist")){
+		if(file.equals("NZCER-spelling-lists.txt")){
 			wordlist = new WordList(_file);
 			_maxNum = 10;
 		}else{
@@ -178,6 +179,16 @@ public class Quiz extends JFrame implements ActionListener {
 				//Remove word from failed test list
 				removeFailed(_testList.get(_testNo-1));
 				
+				_attempts++;
+				
+				//If user gets incorrect first time, the word is added to faulted list
+				/*if(incorrect==1){
+					faulted();
+				//else the word is added to teh mastered list
+				}else{
+					mastered();
+				} */
+				
 				//Increase the test number
 				_attempts++;
 				_testNo++;
@@ -224,7 +235,7 @@ public class Quiz extends JFrame implements ActionListener {
 
 				}
 			}
-			
+
 			updateAccuracy();
 			//Clearing the Jtext field
 			txt.setText("");
@@ -317,6 +328,37 @@ public class Quiz extends JFrame implements ActionListener {
 		_testList = wordlist.createTestList(_level,_maxNum);	
 	}
 	
+
+	private void getAccuracy() throws IOException {
+		File accuracy = new File(".accuracy_" + _level);
+		if (! accuracy.exists()) {
+			accuracy.createNewFile();
+		} else {
+		
+			FileReader fr = new FileReader(accuracy);
+			BufferedReader br = new BufferedReader(fr);
+			String str;
+			str = br.readLine();
+			_attempts = Integer.parseInt(str);
+			str = br.readLine();
+			_fails = Integer.parseInt(str);
+			
+		}
+	}
+	private void updateAccuracy() throws IOException {
+		File accuracy = new File(".accuracy_" + _level);
+	
+		PrintWriter pw = new PrintWriter(accuracy);
+		pw.close();
+		
+		FileWriter fw = new FileWriter(accuracy);
+		BufferedWriter bw = new BufferedWriter(fw);
+		
+		bw.write(_attempts + "\n");
+		bw.write(_fails + "\n");
+		bw.close();
+	}
+	
 	//Putting Failed word into failed list
 	private void failed() throws IOException{
 		File failed = new File(".failed"+_level);
@@ -402,33 +444,5 @@ protected void createAccuracy() throws IOException {
 
 		}
 	}
-	private void getAccuracy() throws IOException {
-		File accuracy = new File(".accuracy_" + _level);
-		if (! accuracy.exists()) {
-			accuracy.createNewFile();
-		} else {
-		
-			FileReader fr = new FileReader(accuracy);
-			BufferedReader br = new BufferedReader(fr);
-			String str;
-			str = br.readLine();
-			_attempts = Integer.parseInt(str);
-			str = br.readLine();
-			_fails = Integer.parseInt(str);
-			
-		}
-	}
-	private void updateAccuracy() throws IOException {
-		File accuracy = new File(".accuracy_" + _level);
-	
-		PrintWriter pw = new PrintWriter(accuracy);
-		pw.close();
-		
-		FileWriter fw = new FileWriter(accuracy);
-		BufferedWriter bw = new BufferedWriter(fw);
-		
-		bw.write(_attempts + "\n");
-		bw.write(_fails + "\n");
-		bw.close();
-	}
+
 }
