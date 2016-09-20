@@ -1,5 +1,6 @@
 package prototype;
 
+import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -18,6 +19,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
@@ -109,13 +112,6 @@ public class Main extends JFrame implements ActionListener {
 		label.setText("Welcome to the Spelling Aid Level"+_level+"!!");
 	}
 	
-	private void menu() {
-		getContentPane().removeAll();
-		getContentPane().add(menuPanel);
-		revalidate();
-		repaint();
-	}
-
 	public void actionPerformed(ActionEvent e) {
 		//Finding the button where the action event occured i.e. finding 
 		//the button that is clicked
@@ -164,9 +160,7 @@ public class Main extends JFrame implements ActionListener {
 			//If viewStats button is clicked
 			}else if (button.equals(viewStats)){  
 
-				ViewStats view = new ViewStats();
-				view.setVisible(true);
-
+				makeTable();
 				return;  
 			//If clearStats button is clicked
 			}else if (button.equals(clearStats)){  
@@ -187,6 +181,24 @@ public class Main extends JFrame implements ActionListener {
 	
 	public void nextLevel(){
 		_level++;
+	}
+	
+	protected void makeTable() {
+		ViewAccuracy va = new ViewAccuracy();
+		JTable table = new JTable(va);
+		
+		//Create panels for Statistics. Add table to panel.
+				JPanel statsPanel = new JPanel();
+				statsPanel.setLayout(new BorderLayout());
+				//statsPanel.add(_statLabel, BorderLayout.NORTH);
+				statsPanel.add(new JScrollPane(table), BorderLayout.CENTER);
+				//returnBtn.addActionListener(this);
+				//statsPanel.add(returnBtn, BorderLayout.SOUTH);
+				
+				JFrame fr = new JFrame();
+				fr.setSize(500, 500);
+				fr.add(statsPanel);
+				fr.setVisible(true);
 	}
 	
 	/*

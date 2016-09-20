@@ -51,6 +51,7 @@ public class Festival extends SwingWorker<Void, Integer>{
 			Writer output;
 			output = new BufferedWriter(new FileWriter(failed,false)); 
 			output.append("(voice_"+_voice+")\n");
+			output.append("(Parameter.set 'Duration_Stretch 1.2)");
 			output.append("(SayText \""+tts+"\")");
 			output.close();
 		}
@@ -58,11 +59,18 @@ public class Festival extends SwingWorker<Void, Integer>{
 		public ArrayList<String> listOfVoices() throws Exception{
 			ArrayList<String> voice = new ArrayList<String>();
 			
-			String cmd = "ls /usr/share/festival/voices/english/ > ./.voices";
+			String cmd = "ls /usr/share/festival/voices/*english* > ./.voices";
 			
 			ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
 			//Excute the command
 			Process process = builder.start();
+			//Wait for the previous process to be finihsed
+			process.waitFor();
+			cmd = "ls /usr/share/festival/voices/*us* >> ./.voices";
+			
+			builder = new ProcessBuilder("/bin/bash", "-c", cmd);
+			//Excute the command
+			process = builder.start();
 			//Wait for the previous process to be finihsed
 			process.waitFor();
 			

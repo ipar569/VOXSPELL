@@ -45,6 +45,8 @@ public class Quiz extends JFrame implements ActionListener {
 	private ArrayList<String> _testList = new ArrayList<String>();
 	private int _maxNum;
 	private int _level;
+	private int _attempts;
+	private int _fails;
 	private int _correct;
 	private String _voice;
 	private ArrayList<String> _voices;
@@ -57,19 +59,23 @@ public class Quiz extends JFrame implements ActionListener {
 		_main=main;
 		_file=file;
 		_level = level;
+		createAccuracy();
+		getAccuracy();
 		
 		_selectVoices = selectVoice();
 		_voice = _voices.get(0);
 		
 		//Setting the size and layout of the spelling quiz
 		setSize(500,500);
-		setLayout(new GridLayout(3,1));
+		setLayout(new GridLayout(4,1));
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		
 		changeVoice("voice_akl_nz_jdt_diphone");
 		//Creating Panels to be used.
 		JPanel middle = new JPanel();
+		JPanel bottom = new JPanel();
 
+		JLabel label3 = new JLabel("Change Voice: ");
 		//Setting the heading of the quiz using label.
 		if(file.equals(".failed")){
 			label1 = new JLabel("Review Mistakes");
@@ -94,10 +100,10 @@ public class Quiz extends JFrame implements ActionListener {
 		//Choosing the number of quiz depending on the word count
 		String tts = "";
 		if(_wc<_maxNum){
-			tts="Spell word 1 out of "+_wc+": ";
+			tts="Spell word 1 of "+_wc+": ";
 			label = new JLabel(tts);
 		}else{
-			tts="Spell word 1 out of "+_maxNum+": ";
+			tts="Spell word 1 of "+_maxNum+": ";
 			label = new JLabel(tts);
 		}
 		
@@ -127,7 +133,9 @@ public class Quiz extends JFrame implements ActionListener {
 		add(label1);
 		add(middle);
 		add(label2);
-		add(_selectVoices);
+		bottom.add(label3);
+		bottom.add(_selectVoices);
+		add(bottom);
 		
 		_selectVoices.addActionListener(this);
 		
@@ -137,7 +145,7 @@ public class Quiz extends JFrame implements ActionListener {
 		spelling.addActionListener(this);
 		
 		//Speaking out instruction to start and the word to be tested.
-		festival(tts+"  " +_testList.get(_testNo-1));
+		festival(_testList.get(_testNo-1));
 		
 	}
 
@@ -170,24 +178,15 @@ public class Quiz extends JFrame implements ActionListener {
 				//Remove word from failed test list
 				removeFailed(_testList.get(_testNo-1));
 				
-				
-				
-				//If user gets incorrect first time, the word is added to faulted list
-				if(incorrect==1){
-					faulted();
-				//else the word is added to teh mastered list
-				}else{
-					mastered();
-				}
-				
 				//Increase the test number
+				_attempts++;
 				_testNo++;
 				_correct++;
 				
 				//Setting the new label
-				label.setText("Spell word "+(_testNo)+" out of "+_maxNum+": ");
+				label.setText("Spell word "+(_testNo)+" of "+_maxNum+": ");
 				if(_wc<_maxNum)
-					label.setText("Spell word "+(_testNo)+" out of "+ _wc+": ");
+					label.setText("Spell word "+(_testNo)+" of "+ _wc+": ");
 				
 				
 				incorrect =0;
@@ -196,17 +195,18 @@ public class Quiz extends JFrame implements ActionListener {
 				//If second time failing
 				if(incorrect<1){
 					//Setting message to the user about the fault
-					label2.setText("Incorrect, please try again!!");
-					festival(label2.getText()+" "+_testList.get(_testNo-1));
+					label2.setText("Incorrect, please try again!");
+					festival(label2.getText()+"\n "+_testList.get(_testNo-1));
 					//Word is spoken again.
 					incorrect++;
 					return;
 				//First time failing
 				}else{
 					//Result message to user
-					label2.setText("Failed Test");
+					label2.setText("Failed Test!");
 
-					
+					_attempts++;
+					_fails++;
 					
 					//Adding failed word to the failed list.
 					failed();
@@ -218,13 +218,14 @@ public class Quiz extends JFrame implements ActionListener {
 					incorrect =0;
 					
 					//Setting new label for new quiz
-					label.setText("Spell word "+(_testNo)+" out of "+_maxNum+": ");
+					label.setText("Spell word "+(_testNo)+" of "+_maxNum+": ");
 					if(_wc<_maxNum)
-						label.setText("Spell word "+(_testNo)+" out of "+ _wc+": ");
+						label.setText("Spell word "+(_testNo)+" of "+ _wc+": ");
 
 				}
 			}
 			
+			updateAccuracy();
 			//Clearing the Jtext field
 			txt.setText("");
 			//If test is finished
@@ -244,7 +245,7 @@ public class Quiz extends JFrame implements ActionListener {
 				
 			}else{
 				//Continue the quiz
-				festival(label2.getText()+" "+label.getText()+" "+_testList.get(_testNo-1));
+				festival(label2.getText()+" "+_testList.get(_testNo-1));
 			}
 		}catch(Exception excep){
 			excep.printStackTrace();
@@ -383,61 +384,51 @@ public class Quiz extends JFrame implements ActionListener {
 		output.close();
 	}
 	
-	//Adding correct word to mastered list
-	private void mastered() throws IOException{
-		File mastered = new File(".mastered"+_level);
-		//If file does not exist, create new file
-		if(!mastered.exists()) {
-			mastered.createNewFile();
-		} 
+protected void createAccuracy() throws IOException {
+		
+		for (int i = 1; i <= 11; i++) {
+			File accuracy = new File(".accuracy_" + i);
+			if (! accuracy.exists()) {
+				accuracy.createNewFile();
+				
+				FileWriter fw = new FileWriter(accuracy);
+				BufferedWriter bw = new BufferedWriter(fw);
+				
+				bw.write("0" + "\n");
+				bw.write("0" + "\n");
+				
+				bw.close();
+			}
 
-		//Appending the word to the file
-		Writer output;
-		output = new BufferedWriter(new FileWriter(mastered,true));
-		output.append(_testList.get(_testNo-1)+"\n");
-		output.close();
+		}
 	}
-
-	//Adding correct word to faulted list
-	private void faulted() throws IOException{
-		File faulted = new File(".faulted"+_level);
-		//If file does not exist, create new file
-		if(!faulted.exists()) {
-			faulted.createNewFile();
-		} 
-
-		//Appending the word to the file
-		Writer output;
-		output = new BufferedWriter(new FileWriter(faulted,true));
-		output.append(_testList.get(_testNo-1)+"\n");
-		output.close();
+	private void getAccuracy() throws IOException {
+		File accuracy = new File(".accuracy_" + _level);
+		if (! accuracy.exists()) {
+			accuracy.createNewFile();
+		} else {
+		
+			FileReader fr = new FileReader(accuracy);
+			BufferedReader br = new BufferedReader(fr);
+			String str;
+			str = br.readLine();
+			_attempts = Integer.parseInt(str);
+			str = br.readLine();
+			_fails = Integer.parseInt(str);
+			
+		}
 	}
+	private void updateAccuracy() throws IOException {
+		File accuracy = new File(".accuracy_" + _level);
 	
-	private void accuracyCorrect() throws IOException{
-		File faulted = new File(".accuracy"+_level);
-		//If file does not exist, create new file
-		if(!faulted.exists()) {
-			faulted.createNewFile();
-		} 
-
-		//Appending the word to the file
-		Writer output;
-		output = new BufferedWriter(new FileWriter(faulted,true));
-		output.append("o\n");
-		output.close();
-	}
-	
-	private void accuracyIncorrect() throws IOException{
-		File faulted = new File(".accuracy"+_level);
-		//If file does not exist, create new file
-		if(!faulted.exists()) {
-			faulted.createNewFile();
-		} 
-
-		//Appending the word to the file
-		Writer output;
-		output = new BufferedWriter(new FileWriter(faulted,true));
-		output.append("x\n");
-		output.close();
+		PrintWriter pw = new PrintWriter(accuracy);
+		pw.close();
+		
+		FileWriter fw = new FileWriter(accuracy);
+		BufferedWriter bw = new BufferedWriter(fw);
+		
+		bw.write(_attempts + "\n");
+		bw.write(_fails + "\n");
+		bw.close();
 	}
 }
