@@ -89,9 +89,13 @@ public class Main extends JFrame implements ActionListener {
 
 		String num = (String) JOptionPane.showInputDialog(this, "Please select a level", "Level Select", 
 				JOptionPane.PLAIN_MESSAGE, null, levelStrings, levelStrings[0]);
+		if(num==null){
+			this.dispose();
+		}else{
 		_level = Integer.parseInt(num);
 		this.setVisible(true);
 		setTitle();
+		}
 	}
 
 	public void setTitle(){

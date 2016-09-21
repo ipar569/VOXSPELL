@@ -81,9 +81,9 @@ public class Quiz extends JFrame implements ActionListener {
 		JLabel label3 = new JLabel("Change Voice: ");
 		//Setting the heading of the quiz using label.
 		if(file.equals(".failed")){
-			label1 = new JLabel("Review Mistakes Level " + _level);
+			label1 = new JLabel("Review Mistakes. Level " + _level);
 		}else{
-			label1 = new JLabel("New Spelling Quiz Level " + _level);
+			label1 = new JLabel("New Spelling Quiz. Level " + _level);
 		}
 		//Defining the font style of the heading
 		label1.setHorizontalAlignment(SwingConstants.CENTER);
