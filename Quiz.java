@@ -81,9 +81,9 @@ public class Quiz extends JFrame implements ActionListener {
 		JLabel label3 = new JLabel("Change Voice: ");
 		//Setting the heading of the quiz using label.
 		if(file.equals(".failed")){
-			label1 = new JLabel("Review Mistakes. Level " + _level);
+			label1 = new JLabel("Review Mistakes Level " + _level);
 		}else{
-			label1 = new JLabel("New Spelling Quiz. Level " + _level);
+			label1 = new JLabel("New Spelling Quiz Level " + _level);
 		}
 		//Defining the font style of the heading
 		label1.setHorizontalAlignment(SwingConstants.CENTER);
@@ -150,7 +150,7 @@ public class Quiz extends JFrame implements ActionListener {
 		stats.addActionListener(this);
 
 		//Speaking out instruction to start and the word to be tested.
-		festival("Spell!! "+_testList.get(_testNo-1)+".");
+		festival(_testList.get(_testNo-1)+".");
 
 	}
 
@@ -213,7 +213,7 @@ public class Quiz extends JFrame implements ActionListener {
 				if(incorrect<1){
 					//Setting message to the user about the fault
 					label2.setText("Incorrect, please try again!!");
-					festival(label2.getText()+" Spell!! "+_testList.get(_testNo-1)+".");
+					festival("Incorrect!! "+_testList.get(_testNo-1)+".");
 					//Word is spoken again.
 					incorrect++;
 					txt.setText("");
@@ -263,7 +263,7 @@ public class Quiz extends JFrame implements ActionListener {
 
 			}else{
 				//Continue the quiz
-				festival(label2.getText()+" Spell !! "+_testList.get(_testNo-1)+".");
+				festival(label2.getText()+" "+_testList.get(_testNo-1)+".");
 			}
 		}catch(Exception excep){
 			excep.printStackTrace();
