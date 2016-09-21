@@ -1,6 +1,7 @@
 package prototype;
 
 import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -10,6 +11,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
@@ -45,7 +47,13 @@ public class MediaPlayer {
 	        
 	       mediaFrame.setContentPane(panel);
         final JButton pauseBtn = new JButton("Pause");
-        panel.add(pauseBtn, BorderLayout.SOUTH);
+        
+        JPanel secondPanel = new JPanel(new GridLayout(2,1));
+        panel.add(secondPanel, BorderLayout.SOUTH);
+        final JProgressBar pb = new JProgressBar();
+        pb.setValue(0);
+        secondPanel.add(pauseBtn);
+        secondPanel.add(pb);
         pauseBtn.addActionListener(new ActionListener() {
 
 			@Override
@@ -61,13 +69,31 @@ public class MediaPlayer {
 			}
         	
         });
+        
+        Timer timer = new Timer(50, new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				long time = (long) video.getTime();
+				//System.out.println(time);
+				long totalTime = (long) video.getLength();
+				//System.out.println(totalTime);
+				long percentage = ( (time * 100) / totalTime );
+				int n = (int) percentage;
+				//System.out.println(percentage);
+				pb.setValue(n);
+			}
+        	
+        });
+        		
+        timer.start();	
         mediaPath = "big_buck_bunny_1_minute.avi";
         
         mediaFrame.addWindowListener(new WindowAdapter() {
         	@Override
         	public void windowClosing(WindowEvent e) {
         		video.stop();
-        		System.exit(0);
+        		mediaFrame.dispose();
         	}
         });
         

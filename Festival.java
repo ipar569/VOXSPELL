@@ -51,7 +51,7 @@ public class Festival extends SwingWorker<Void, Integer>{
 			Writer output;
 			output = new BufferedWriter(new FileWriter(failed,false)); 
 			output.append("(voice_"+_voice+")\n");
-			output.append("(Parameter.set 'Duration_Stretch 1.2)");
+			output.append("(Parameter.set 'Duration_Stretch 1.3)");
 			output.append("(SayText \""+tts+"\")");
 			output.close();
 		}

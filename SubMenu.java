@@ -59,7 +59,8 @@ public class SubMenu extends JFrame implements ActionListener{
 				menuPanel.add(repeat);
 				menuPanel.add(stats);
 				if(correct>=9){
-					menuPanel.add(nextLevel);
+					if(!(_level==11))
+						menuPanel.add(nextLevel);
 					menuPanel.add(video);
 				}
 				
@@ -77,7 +78,7 @@ public class SubMenu extends JFrame implements ActionListener{
 			dispose();
 		}else if(button.equals(repeat)){
 			dispose();
-			Quiz q = new Quiz("wordlist",_main, _level);
+			Quiz q = new Quiz("NZCER-spelling-lists.txt",_main, _level);
 			q.setVisible(true);
 		}else if(button.equals(stats)){
 			_main.makeTable();

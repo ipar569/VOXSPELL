@@ -61,7 +61,11 @@ public class WordList {
 			LinkedHashSet<String> temp = new LinkedHashSet<String>(_wordList);
 			return temp.size();
 		}
+		if (level == 11) {
+			return _wordList.size() -1 - pos[level-1];
+		} 
 		return pos[level]-1-pos[level-1];
+		
 	}
 	
 	//Get random word from the arrayList
