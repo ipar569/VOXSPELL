@@ -24,37 +24,38 @@ import com.sun.jna.Native;
 import com.sun.jna.NativeLibrary;
 
 public class MediaPlayer {
-	
+
 	private final EmbeddedMediaPlayerComponent mediaPlayerComponent;
-	
+
 	private JFrame mediaFrame = new JFrame();
 	private String mediaPath = "";
-	
+
 	private boolean pause = true;
-	
+
 	MediaPlayer() {
 
-        NativeLibrary.addSearchPath(
-                RuntimeUtil.getLibVlcLibraryName(), "/Applications/vlc-2.0.0/VLC.app/Contents/MacOS/lib"
-            );
-            Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class);
-        
-        mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
-        final EmbeddedMediaPlayer video = mediaPlayerComponent.getMediaPlayer();
-        
-	    JPanel panel = new JPanel(new BorderLayout());
-	       panel.add(mediaPlayerComponent, BorderLayout.CENTER);
-	        
-	       mediaFrame.setContentPane(panel);
-        final JButton pauseBtn = new JButton("Pause");
-        
-        JPanel secondPanel = new JPanel(new GridLayout(2,1));
-        panel.add(secondPanel, BorderLayout.SOUTH);
-        final JProgressBar pb = new JProgressBar();
-        pb.setValue(0);
-        secondPanel.add(pauseBtn);
-        secondPanel.add(pb);
-        pauseBtn.addActionListener(new ActionListener() {
+		NativeLibrary.addSearchPath(
+				RuntimeUtil.getLibVlcLibraryName(), "/Applications/vlc-2.0.0/VLC.app/Contents/MacOS/lib"
+				);
+		Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class);
+
+		mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
+		
+		final EmbeddedMediaPlayer video = mediaPlayerComponent.getMediaPlayer();
+
+		JPanel panel = new JPanel(new BorderLayout());
+		panel.add(mediaPlayerComponent, BorderLayout.CENTER);
+
+		mediaFrame.setContentPane(panel);
+		final JButton pauseBtn = new JButton("Pause");
+
+		JPanel secondPanel = new JPanel(new GridLayout(2,1));
+		panel.add(secondPanel, BorderLayout.SOUTH);
+		final JProgressBar pb = new JProgressBar();
+		pb.setValue(0);
+		secondPanel.add(pauseBtn);
+		secondPanel.add(pb);
+		pauseBtn.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -67,10 +68,10 @@ public class MediaPlayer {
 					pause = true;
 				}
 			}
-        	
-        });
-        
-        Timer timer = new Timer(50, new ActionListener() {
+
+		});
+
+		Timer timer = new Timer(50, new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -83,28 +84,28 @@ public class MediaPlayer {
 				//System.out.println(percentage);
 				pb.setValue(n);
 			}
-        	
-        });
-        		
-        timer.start();	
-        mediaPath = "big_buck_bunny_1_minute.avi";
-        
-        mediaFrame.addWindowListener(new WindowAdapter() {
-        	@Override
-        	public void windowClosing(WindowEvent e) {
-        		video.stop();
-        		mediaFrame.dispose();
-        	}
-        });
-        
-        mediaFrame.setLocation(100, 100);
-        mediaFrame.setSize(1050, 600);
-        mediaFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        mediaFrame.setVisible(true);
-        
-        video.playMedia(mediaPath);
-        
+		});
+
+		timer.start();	
+		mediaPath = "big_buck_bunny_1_minute.avi";
+
+		mediaFrame.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				video.stop();
+				mediaFrame.dispose();
+			}
+		});
+
+		mediaFrame.setLocation(100, 100);
+		mediaFrame.setSize(1050, 600);
+		mediaFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+		mediaFrame.setVisible(true);
+
+		video.playMedia(mediaPath);
+
 	}
 
 }

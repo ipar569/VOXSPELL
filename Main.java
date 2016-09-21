@@ -35,7 +35,9 @@ public class Main extends JFrame implements ActionListener {
 	private JButton review = new JButton("Review Mistakes");
 	private JButton viewStats = new JButton("View Statistics");
 	private JButton clearStats = new JButton("Clear Statistics");
-	private JLabel label = new JLabel("Welcome to the Spelling Aid Level!!");
+	private JPanel titlePanel = new JPanel();
+	private JLabel label = new JLabel("Welcome to the Spelling Aid!!");
+	private JLabel label2 = new JLabel();
 
 	private JPanel menuPanel = new JPanel();
 	private int _level;
@@ -51,11 +53,16 @@ public class Main extends JFrame implements ActionListener {
 
 		//Entering the heading of the main menu to make it look more user freindly.
 
-		label.setHorizontalAlignment(SwingConstants.CENTER);
+		//label.setHorizontalAlignment(SwingConstants.CENTER);
 		label.setFont(new Font("Arial",Font.BOLD, 18));
-
+		label.setBounds(100, 10, 500, 60);
+		label2.setBounds(230, 50, 200, 30);
+		titlePanel.setLayout(null);
+		//label2.setVerticalAlignment(SwingConstants.BOTTOM);
+		titlePanel.add(label);
+		titlePanel.add(label2);
 		//Adding the heading label to the main menu
-		menuPanel.add(label);
+		menuPanel.add(titlePanel);
 		//Adding Actionlistener to each buttons
 		quiz.addActionListener(this);
 		review.addActionListener(this);
@@ -70,26 +77,6 @@ public class Main extends JFrame implements ActionListener {
 
 		this.add(menuPanel);
 
-		/*
-		JPanel tempPanel = new JPanel();
-		tempPanel.setLayout(null);
-		JLabel levelLabel = new JLabel("Please select a level:");
-		levelLabel.setBounds(170, 150, 250, 50);
-		String[] levelStrings = { "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", 
-				"Nine", "Ten", "Eleven" };
-		final JComboBox levelList = new JComboBox(levelStrings);		
-		Action boxAction = new AbstractAction() {
-			public void actionPerformed(ActionEvent e) {
-				_level = (String)levelList.getSelectedItem();
-				menu();
-			}
-		};
-		levelList.addActionListener(boxAction);
-		levelList.setBounds(190, 200, 100, 30);
-		tempPanel.add(levelLabel);
-		tempPanel.add(levelList);
-		this.add(tempPanel);
-		 */
 
 	}
 
@@ -99,8 +86,6 @@ public class Main extends JFrame implements ActionListener {
 		final JComboBox<String> combo = new JComboBox<>(levelStrings);
 		String[] options = { "OK" };
 
-		/*_level = JOptionPane.showOptionDialog(this, combo, "Please select a level:",
-				JOptionPane.DEFAULT_OPTION	,JOptionPane.PLAIN_MESSAGE, null, options, options[0]); */
 
 		String num = (String) JOptionPane.showInputDialog(this, "Please select a level", "Level Select", 
 				JOptionPane.PLAIN_MESSAGE, null, levelStrings, levelStrings[0]);
@@ -110,7 +95,8 @@ public class Main extends JFrame implements ActionListener {
 	}
 
 	public void setTitle(){
-		label.setText("Welcome to the Spelling Aid Level "+_level+"!!");
+		//label.setText("Welcome to the Spelling Aid Level "+_level+"!!");
+		label2.setText("Level "+_level);
 	}
 
 	private void menu() {
