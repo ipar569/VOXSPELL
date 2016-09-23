@@ -25,7 +25,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 /* 
- * Author: Injae Park
+ * Author: Injae Park and Jack Huang
  */
 
 public class Main extends JFrame implements ActionListener {
@@ -55,7 +55,7 @@ public class Main extends JFrame implements ActionListener {
 
 		//label.setHorizontalAlignment(SwingConstants.CENTER);
 		label.setFont(new Font("Arial",Font.BOLD, 18));
-		label.setBounds(100, 10, 500, 60);
+		label.setBounds(120, 10, 500, 60);
 		label2.setBounds(230, 50, 200, 30);
 		titlePanel.setLayout(null);
 		//label2.setVerticalAlignment(SwingConstants.BOTTOM);
@@ -103,12 +103,7 @@ public class Main extends JFrame implements ActionListener {
 		label2.setText("Level "+_level);
 	}
 
-	private void menu() {
-		getContentPane().removeAll();
-		getContentPane().add(menuPanel);
-		revalidate();
-		repaint();
-	}
+	
 
 	public void actionPerformed(ActionEvent e) {
 		//Finding the button where the action event occured i.e. finding 
@@ -180,18 +175,20 @@ public class Main extends JFrame implements ActionListener {
 		}
 
 	}
-
+	/*
+	 * This functions makes the table using the ViewAccuracy class. Table is placed in a 
+	 * new JPanel.
+	 */
 	protected void makeTable() {
 		ViewAccuracy va = new ViewAccuracy();
 		JTable table = new JTable(va);
 		final JFrame fr = new JFrame();
 		fr.setSize(500,500);
 		fr.setVisible(true);
-		//Create panels for Statistics. Add table to panel.
 		JPanel statsPanel = new JPanel();
+		//Add a close button to close the frame
 		JButton returnBtn = new JButton("Close Stats");
 		statsPanel.setLayout(new BorderLayout());
-		//statsPanel.add(_statLabel, BorderLayout.NORTH);
 		statsPanel.add(new JScrollPane(table), BorderLayout.CENTER);
 		returnBtn.addActionListener(new ActionListener() {
 
@@ -248,7 +245,9 @@ public class Main extends JFrame implements ActionListener {
 		}
 		createAccuracy();
 	}
-
+	
+	//Creates save files to store the accuracy, then add zeros to the file. There is a save 
+	//file for each level
 	private void createAccuracy() {
 
 		for (int i = 1; i <= 11; i++) {

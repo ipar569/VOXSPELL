@@ -38,7 +38,7 @@ public class MediaPlayer {
 				RuntimeUtil.getLibVlcLibraryName(), "/Applications/vlc-2.0.0/VLC.app/Contents/MacOS/lib"
 				);
 		Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class);
-
+		//Make media player
 		mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
 		
 		final EmbeddedMediaPlayer video = mediaPlayerComponent.getMediaPlayer();
@@ -47,6 +47,8 @@ public class MediaPlayer {
 		panel.add(mediaPlayerComponent, BorderLayout.CENTER);
 
 		mediaFrame.setContentPane(panel);
+		
+		//add pause button and a progress bar
 		final JButton pauseBtn = new JButton("Pause");
 
 		JPanel secondPanel = new JPanel(new GridLayout(2,1));
@@ -70,18 +72,16 @@ public class MediaPlayer {
 			}
 
 		});
-
+		
+		//Progress Bar shows how long the video has been playing
 		Timer timer = new Timer(50, new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				long time = (long) video.getTime();
-				//System.out.println(time);
 				long totalTime = (long) video.getLength();
-				//System.out.println(totalTime);
 				long percentage = ( (time * 100) / totalTime );
 				int n = (int) percentage;
-				//System.out.println(percentage);
 				pb.setValue(n);
 			}
 
@@ -89,7 +89,8 @@ public class MediaPlayer {
 
 		timer.start();	
 		mediaPath = "big_buck_bunny_1_minute.avi";
-
+		
+		//Video stops playing after frame closes
 		mediaFrame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {

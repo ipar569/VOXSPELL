@@ -15,11 +15,13 @@ public class Festival extends SwingWorker<Void, Integer>{
 		private String _tts;
 		private String _voice;
 		
+		//Getting the values to be used.
 		public Festival(String tts,String voice) throws Exception{
 			_tts=tts;
 			_voice = voice;
 		}
 		
+		//When it is executed, festival is played.
 		@Override
 		protected Void doInBackground() throws Exception {
 			setScheme(_tts, _voice);
@@ -49,14 +51,15 @@ public class Festival extends SwingWorker<Void, Integer>{
 			Writer output;
 			output = new BufferedWriter(new FileWriter(failed,false)); 
 			output.append("(voice_"+_voice+")\n");
-			output.append("(Parameter.set 'Duration_Stretch 1.1)");
-			String[] lines = tts.split(" ");
+			output.append("(Parameter.set 'Duration_Stretch 1.2)");
+			String[] lines = tts.split("!!");
 			for(int i =0; i<lines.length;i++){
 				output.append("(SayText \""+lines[i]+"\")");
 			}
 			output.close();
 		}
 		
+		//Get the list of available voice on the current machine.
 		public ArrayList<String> listOfVoices() throws Exception{
 			ArrayList<String> voice = new ArrayList<String>();
 			

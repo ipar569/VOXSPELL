@@ -36,6 +36,7 @@ public class Quiz extends JFrame implements ActionListener {
 	private JButton btn = new JButton("Submit");
 	private JButton speak = new JButton("Listen Again");
 	private JButton spelling = new JButton("Listen to Spelling");
+	private JLabel score;
 	private int _testNo=1;
 	private int _wc;
 	private JLabel label,label1,label2;
@@ -45,6 +46,7 @@ public class Quiz extends JFrame implements ActionListener {
 	private ArrayList<String> _testList = new ArrayList<String>();
 	private int _maxNum;
 	private int _level;
+	private int _testNum;
 
 	private int _attempts;
 	private int _fails;
@@ -69,7 +71,7 @@ public class Quiz extends JFrame implements ActionListener {
 
 		//Setting the size and layout of the spelling quiz
 		setSize(500,500);
-		setLayout(new GridLayout(4,1));
+		setLayout(new GridLayout(5,1));
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		this.getRootPane().setDefaultButton(btn);
 
@@ -103,9 +105,11 @@ public class Quiz extends JFrame implements ActionListener {
 		//Choosing the number of quiz depending on the word count
 		String tts = "";
 		if(_wc<_maxNum){
+			_testNum=_wc;
 			tts="Spell word 1 of "+_wc+": ";
 			label = new JLabel(tts);
 		}else{
+			_testNum = _maxNum;
 			tts="Spell word 1 of "+_maxNum+": ";
 			label = new JLabel(tts);
 		}
@@ -130,17 +134,25 @@ public class Quiz extends JFrame implements ActionListener {
 		middle.add(speak);
 		if(_maxNum==5){
 			middle.add(spelling);
-		}
+		} 
+		
+		score = new JLabel(_correct+" out of "+_testNum);
+		score.setHorizontalAlignment(SwingConstants.CENTER);
 
 		//Adding labels and pane to the main frame.
 		add(label1);
 		add(middle);
 		add(label2);
+		add(score);
 		bottom.add(label3);
 		bottom.add(_selectVoices);
 		bottom.add(stats);
 		add(bottom);
+		
+		
 
+		
+		
 		_selectVoices.addActionListener(this);
 
 		//Adding action listeners to the button.
@@ -150,7 +162,7 @@ public class Quiz extends JFrame implements ActionListener {
 		stats.addActionListener(this);
 
 		//Speaking out instruction to start and the word to be tested.
-		festival(_testList.get(_testNo-1)+".");
+		festival("Spell "+_testList.get(_testNo-1)+".");
 
 	}
 
@@ -164,16 +176,18 @@ public class Quiz extends JFrame implements ActionListener {
 			return;
 		}
 		try{
-			//If user pressed speak button, spelling of the word
+			//If user pressed speak button,  the word
 			//is spoken by festival.
 			JButton button = (JButton) e.getSource();  
 			if (button.equals(speak)){  
 
 				festival(_testList.get(_testNo-1));
 				return;
+				//if spelling is pressed, the alphabet of the word being tested  is spoken.
 			}else if (button.equals(spelling)){
 				festivalAlphabet(_testList.get(_testNo-1));
 				return;
+				//open up the stats view.
 			}else if (button.equals(stats)){
 				_main.makeTable();
 				return;
@@ -187,15 +201,6 @@ public class Quiz extends JFrame implements ActionListener {
 				removeFailed(_testList.get(_testNo-1));
 
 
-				//If user gets incorrect first time, the word is added to faulted list
-				/*if(incorrect==1){
-					faulted();
-				//else the word is added to teh mastered list
-				}else{
-					mastered();
-				} */
-
-				//Increase the test number
 				_attempts++;
 				_testNo++;
 				_correct++;
@@ -213,7 +218,7 @@ public class Quiz extends JFrame implements ActionListener {
 				if(incorrect<1){
 					//Setting message to the user about the fault
 					label2.setText("Incorrect, please try again!!");
-					festival("Incorrect!! "+_testList.get(_testNo-1)+".");
+					festival("Incorrect!! Spell"+_testList.get(_testNo-1)+".");
 					//Word is spoken again.
 					incorrect++;
 					txt.setText("");
@@ -221,8 +226,9 @@ public class Quiz extends JFrame implements ActionListener {
 					//First time failing
 				}else{
 					//Result message to user
-					label2.setText("Failed Test!!");
-
+					label2.setText("Failed!!");
+					
+					//increase test number and fail value
 					_attempts++;
 					_fails++;
 
@@ -242,7 +248,8 @@ public class Quiz extends JFrame implements ActionListener {
 
 				}
 			}
-
+			//updating the values.
+			score.setText(_correct+" out of "+_testNum);
 			updateAccuracy();
 			//Clearing the Jtext field
 			txt.setText("");
@@ -256,6 +263,7 @@ public class Quiz extends JFrame implements ActionListener {
 					_main.setVisible(true);
 					dispose();
 				}else{
+					//opens options menu where user can choose their next action.
 					SubMenu sub = new SubMenu(_file,_main,_level,_correct,_testNo-1);
 					sub.setVisible(true);
 					dispose();
@@ -263,13 +271,14 @@ public class Quiz extends JFrame implements ActionListener {
 
 			}else{
 				//Continue the quiz
-				festival(label2.getText()+" "+_testList.get(_testNo-1)+".");
+				festival(label2.getText()+" Spell "+_testList.get(_testNo-1)+".");
 			}
 		}catch(Exception excep){
 			excep.printStackTrace();
 		}
 	}
 
+	//Function that allows user to change the voice of festival.
 	private JComboBox<String> selectVoice() throws Exception{
 
 		Festival f = new Festival("","");
@@ -284,7 +293,8 @@ public class Quiz extends JFrame implements ActionListener {
 
 		return voices;
 	}
-
+	
+	//method to change the voice.
 	private void changeVoice(String voice) throws IOException{
 		File failed = new File(".festivalrc");
 		//If file does not exist, create new file
@@ -335,7 +345,8 @@ public class Quiz extends JFrame implements ActionListener {
 		_testList = wordlist.createTestList(_level,_maxNum);	
 	}
 
-
+	//Obtains the accuracy values from the save file (for the current quiz level)
+	// then add the levels to the corresponding fields
 	private void getAccuracy() throws IOException {
 		File accuracy = new File(".accuracy_" + _level);
 		if (! accuracy.exists()) {
@@ -352,6 +363,8 @@ public class Quiz extends JFrame implements ActionListener {
 
 		}
 	}
+	//Write the values from the accuracy fields (_attempts, _fails) to the corresponding
+	// save files
 	private void updateAccuracy() throws IOException {
 		File accuracy = new File(".accuracy_" + _level);
 

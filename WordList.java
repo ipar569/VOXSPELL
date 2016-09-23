@@ -18,6 +18,7 @@ public class WordList {
 	private int[] pos = new int[11];
 	private boolean _failed = false;
 	
+	//This constructor is for normal quiz.
 	public WordList(String file) throws IOException{
 		
 			BufferedReader wordlist = new BufferedReader(new FileReader("."+File.separator+file));
@@ -40,6 +41,9 @@ public class WordList {
 			}
 	}
 	
+	/*
+	 * This constructor is for making wordlist for review function.
+	 */
 	public WordList(String file, int level) throws IOException{
 		
 		BufferedReader wordlist = new BufferedReader(new FileReader("."+File.separator+file+level));
@@ -90,7 +94,9 @@ public class WordList {
 		return _wordList.get(a);
 	}
 	
+	//Create a list of words to be tested.
 	public ArrayList<String> createTestList(int level, int num){
+		//Store only unique values.
 		LinkedHashSet<String> list = new LinkedHashSet<String>();
 		int n = getWordCount(level);
 		while(list.size()<num||list.size()<n){

@@ -18,7 +18,7 @@ public class ViewAccuracy extends AbstractTableModel{
 
 
 	public ViewAccuracy() {
-		
+		//This for loop reads all accuracy save files and adds the values to some lists
 		for (int i = 1; i <= 11; i++) {
 			try {
 			FileReader fr = new FileReader(".accuracy_" + i);
@@ -33,7 +33,7 @@ public class ViewAccuracy extends AbstractTableModel{
 				e.printStackTrace();
 			}
 		}
-		
+		//This for loop calculates the overall accuracy (as a percentage) for all levels
 		for (int j = 0; j < 11; j++) {
 			double num = 0;
 			if (attemptsList.get(j) != 0) {
@@ -60,7 +60,7 @@ public class ViewAccuracy extends AbstractTableModel{
 		return 4;
 
 	}
-
+	//Add values from the arraylists into the table
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		// TODO Auto-generated method stub
